@@ -96,8 +96,8 @@ export default function AddClass(){
                                     onChange={(ev) => setInput({...input, ispublic : !input.ispublic})}
                                 />
                                 <label htmlFor="cbx">Is Public</label>
-                                <h4 className="text-red-200">{errorMsg}</h4>
                             </div>
+                            {errorMsg != "" ? (<h4 className="text-red-400 mt-5">{errorMsg}</h4>) : (<></>)}
                             <input type="submit" value="Add" className={"border border-slate-200 bg-[#ff7854] hover:bg-[#ff4c1a] text-gray-100 mt-5 px-3 py-2 focus:outline-[#ff7854] rounded-md cursor-pointer" + (process? " hidden" : "")}/>
                             <button className={"flex justify-center border border-slate-200 bg-[#ff4c1a] text-gray-100 focus:outline-[#ff7854] rounded-md cursor-pointer mt-5" + (process? "" : " hidden")} disabled>
                             <img

@@ -2,7 +2,7 @@ import { Context, Hono } from "hono"
 import { authentication } from "../auth/middleware"
 import { JWTVerify, verify } from "../auth/jwtauth"
 import { getCookie } from "hono/cookie"
-import { findClassByInstructorId, insertClass } from "../db/class"
+import { findClassById, findClassByInstructorId, insertClass } from "../db/class"
 
 export const Instructor = new Hono()
 
@@ -67,6 +67,23 @@ Instructor.post("class", async(c: Context) => {
                 status: "OK"
             })
         }
+    }
+    catch{
+        return c.json({
+            status: "FAIL"
+        })
+    }
+})
+
+Instructor.post("class/find/", async (c: Context) => {
+    try{
+        const { class_id } = await c.req.json()
+        const class_info = await findClassById(class_id);
+
+        return c.json({
+            status: "OK",
+            data: class_info
+        })
     }
     catch{
         return c.json({

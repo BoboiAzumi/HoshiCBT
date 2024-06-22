@@ -55,7 +55,7 @@ export default function UserDashboard() {
                     <h2 className="mt-[10rem] mb-5 text-2xl font-semibold text-gray-600">Classes List</h2>
                     <div className="grid grid-flow-col-dense gap-2 grid-cols-3">
                         {classes.map((v: ClassesData) => (
-                            <div className="border shadow-sm shadow-gray-200 w-[10rem] px-5 py-2">
+                            <div className="flex flex-col justify-center items-center border shadow-sm shadow-gray-200 w-[10rem] px-5 py-2">
                                 {v.is_blocked? (
                                     <h3 className="text-center text-red-600 font-semibold">
                                         {v.classes.name}

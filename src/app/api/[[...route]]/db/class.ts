@@ -71,3 +71,11 @@ export async function insertClass(class_name: string, is_public: boolean, instru
 
     return true
 }
+
+export async function findClassById(class_id: string){
+    const collection = DB.collection("Classes")
+
+    const class_info: Classes[] = await collection.find<Classes>({_id: new ObjectId(class_id)}).toArray()
+
+    return class_info[0]
+}
