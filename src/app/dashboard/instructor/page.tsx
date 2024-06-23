@@ -53,7 +53,7 @@ export default function UserDashboard() {
             </UserData.Provider>
             <div className="w-full z-0">
                 <div className="flex flex-col items-center">
-                    <h2 className="mt-[10rem] mb-5 text-2xl font-semibold text-gray-600">Classes List</h2>
+                    <h2 className="mt-[7.5rem] mb-5 text-2xl font-semibold text-gray-600">Classes List</h2>
                     <div className="grid grid-flow-col-dense gap-2 grid-cols-3">
                         <div className="border shadow-sm shadow-gray-200 w-[10rem] px-5 py-2">
                             <a href={"/dashboard/instructor/class/add"}> 
@@ -63,7 +63,7 @@ export default function UserDashboard() {
                             </a>
                         </div>
                     </div>
-                    <div className="grid grid-flow-col-dense gap-2 grid-cols-3 mt-5">
+                    <div className="grid grid-flow-row-dense gap-2 grid-cols-3 mt-5">
                         {classes.length != 0 ? classes.map((v: Classes) => (
                             <div className="flex flex-col justify-center items-center border shadow-sm shadow-gray-200 w-[10rem] px-5 py-2">
                                 <a href={"/dashboard/instructor/class/"+v._id}> 

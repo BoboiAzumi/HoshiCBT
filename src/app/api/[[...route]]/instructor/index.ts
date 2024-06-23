@@ -2,7 +2,9 @@ import { Context, Hono } from "hono"
 import { authentication } from "../auth/middleware"
 import { JWTVerify, verify } from "../auth/jwtauth"
 import { getCookie } from "hono/cookie"
-import { findClassById, findClassByInstructorId, insertClass } from "../db/class"
+import { deleteClassById, findClassById, findClassByInstructorId, insertClass, updateClassById } from "../db/class"
+import { Classes } from "../types/class"
+import { deleteExamByClasId } from "../db/exam"
 
 export const Instructor = new Hono()
 
@@ -75,9 +77,9 @@ Instructor.post("class", async(c: Context) => {
     }
 })
 
-Instructor.post("class/find/", async (c: Context) => {
+Instructor.get("class/find/:class_id", async (c: Context) => {
     try{
-        const { class_id } = await c.req.json()
+        const { class_id } = await c.req.param()
         const class_info = await findClassById(class_id);
 
         return c.json({
@@ -86,6 +88,41 @@ Instructor.post("class/find/", async (c: Context) => {
         })
     }
     catch{
+        return c.json({
+            status: "FAIL"
+        })
+    }
+})
+
+Instructor.post("class/update", async (c: Context) => {
+    try{
+        const class_object: Classes = await c.req.json();
+
+        await updateClassById(class_object._id, class_object)
+
+        return c.json({
+            status: "OK"
+        })
+    }
+    catch(err){
+        return c.json({
+            status: "FAIL"
+        })
+    }
+})
+
+Instructor.delete("class", async (c: Context) => {
+    try{
+        const { class_id } = await c.req.json();
+
+        await deleteClassById(class_id)
+        await deleteExamByClasId(class_id)
+
+        return c.json({
+            status: "OK"
+        })
+    }
+    catch(err){
         return c.json({
             status: "FAIL"
         })

@@ -79,3 +79,18 @@ export async function findClassById(class_id: string){
 
     return class_info[0]
 }
+
+export async function updateClassById(class_id: string, class_object: Classes){
+    const collection = DB.collection("Classes")
+
+    await collection.updateOne({_id: new ObjectId(class_id)}, {$set: {
+        name: class_object.name,
+        is_public: class_object.is_public
+    }})
+}
+
+export async function deleteClassById(class_id: string){
+    const collection = DB.collection("Classes")
+    
+    await collection.deleteOne({_id: new ObjectId(class_id)});
+}

@@ -261,3 +261,11 @@ export async function getResultTest(class_id: string, exam_id: string, user_id: 
         detail: quest
     }
 }
+
+export async function deleteExamByClasId(class_id: string){
+    const exam = DB.collection("Exam")
+    const exam_session = DB.collection("Exam_Session")
+
+    await exam.deleteMany({class_id: new ObjectId(class_id)})
+    await exam_session.deleteMany({class_id: new ObjectId(class_id)})
+}
