@@ -94,3 +94,25 @@ export async function deleteClassById(class_id: string){
     
     await collection.deleteOne({_id: new ObjectId(class_id)});
 }
+
+export async function getAllowUser(class_id: string){
+    const collection = DB.collection("Classes")
+
+    const class_info: Classes = (await collection.aggregate<Classes>([
+        {
+            $match:{
+                _id: new ObjectId(class_id)
+            }
+        },
+        {
+            $lookup:{
+                from: "Users",
+                    localField: "allow_users",
+                    foreignField: "_id",
+                    as: "allow_users_list"
+                }
+            }
+    ]).toArray())[0]
+
+    return class_info.allow_users_list;
+}

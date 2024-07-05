@@ -1,6 +1,5 @@
-import { Context, Hono } from "hono"
+import { Hono } from "hono"
 import { handle } from "hono/vercel"
-import { register, verify } from "./auth/jwtauth"
 import { auth } from "./auth"
 import { Instructor } from "./instructor"
 import { User } from "./user"
