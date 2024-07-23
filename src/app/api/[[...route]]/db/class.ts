@@ -116,3 +116,14 @@ export async function getAllowUser(class_id: string){
 
     return class_info.allow_users_list;
 }
+
+export async function getAllowUserNotIn(class_id: string){
+    const collection_class = DB.collection("Classes")
+    const collection_user = DB.collection("Users")
+
+    const class_info = await collection_class.find({_id: new ObjectId(class_id)}).toArray()
+
+    const allowUserNotIn = await collection_user.find({_id: {$nin: class_info[0].allow_users}, role: "user"}).toArray()
+
+    return allowUserNotIn;
+}
