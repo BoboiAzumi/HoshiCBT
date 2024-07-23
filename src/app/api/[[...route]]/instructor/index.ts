@@ -2,7 +2,7 @@ import { Context, Hono } from "hono"
 import { authentication } from "../auth/middleware"
 import { JWTVerify, verify } from "../auth/jwtauth"
 import { getCookie } from "hono/cookie"
-import { deleteClassById, findClassById, findClassByInstructorId, getAllowUser, getAllowUserNotIn, insertClass, updateClassById } from "../db/class"
+import { deleteClassById, findClassById, findClassByInstructorId, getAllowUser, getAllowUserNotIn, insertClass, setAllowUser, updateClassById } from "../db/class"
 import { Classes } from "../types/class"
 import { deleteExamByClasId } from "../db/exam"
 
@@ -157,6 +157,22 @@ Instructor.post("class/allow/not_in", async (c: Context) => {
     catch(err){
         return c.json({
             status: "FAIL"
+        })
+    }
+})
+
+Instructor.post("class/allow/set", async (c: Context) => {
+    try{
+        const { class_id, user_id } = await c.req.json()
+
+        return c.json({
+            status: "OK",
+            data: await setAllowUser(class_id, user_id)
+        })
+    }
+    catch(err){
+        return c.json({
+            status: "FAIL",
         })
     }
 })

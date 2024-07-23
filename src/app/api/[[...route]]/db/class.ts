@@ -127,3 +127,21 @@ export async function getAllowUserNotIn(class_id: string){
 
     return allowUserNotIn;
 }
+
+export async function setAllowUser(class_id: string, user_id: string){
+    const uid = new ObjectId(user_id)
+    const collection = DB.collection("Classes")
+    const class_info = (await collection.find({_id: new ObjectId(class_id)}).toArray())
+
+    const { allow_users } = class_info[0]
+
+    const exist = allow_users.some((users: ObjectId) => users.equals(uid))
+    if(exist){
+        return false
+    }
+    
+    allow_users.push(new ObjectId(user_id))
+
+    await collection.updateOne({_id: new ObjectId(class_id)}, {$set: {allow_users: allow_users}})
+    return true
+}
