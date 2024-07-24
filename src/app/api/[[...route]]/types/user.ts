@@ -1,4 +1,5 @@
 export type UsersInformation = {
+    identity?: string,
     fullname: string,
     email: string,
     phone: string,
