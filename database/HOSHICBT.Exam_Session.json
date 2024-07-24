@@ -1,0 +1,153 @@
+[{
+  "_id": {
+    "$oid": "66a0e4a8f2ec66e6d575ce2b"
+  },
+  "exam_id": {
+    "$oid": "664f563454a7efa10e7f8202"
+  },
+  "class_id": {
+    "$oid": "663e11d47b39f9ee0898004b"
+  },
+  "user_id": {
+    "$oid": "6644c524ee63821daa2f7040"
+  },
+  "due": {
+    "$numberLong": "1721823928219"
+  },
+  "active": false,
+  "exam_name": "Ujian Floss",
+  "questions": [
+    {
+      "question": "Yang bukan linux berbasis debian",
+      "attachment": [],
+      "list_answer": [
+        {
+          "text": "Endeavour OS",
+          "correct": true,
+          "index": 2
+        },
+        {
+          "text": "Linux Mint",
+          "correct": false,
+          "index": 1
+        },
+        {
+          "text": "Ubuntu",
+          "correct": false,
+          "index": 0
+        },
+        {
+          "text": "Kali Linux",
+          "correct": false,
+          "index": 3
+        }
+      ],
+      "index": 3,
+      "answer": 3
+    },
+    {
+      "question": "Siapa dia ?",
+      "attachment": [
+        {
+          "type": "image",
+          "source": "https://cdn.britannica.com/99/124299-050-4B4D509F/Linus-Torvalds-2012.jpg"
+        }
+      ],
+      "list_answer": [
+        {
+          "text": "Satoshi Nakamoto",
+          "correct": false,
+          "index": 3
+        },
+        {
+          "text": "Richard Stallman",
+          "correct": false,
+          "index": 0
+        },
+        {
+          "text": "Linus Torvalds",
+          "correct": true,
+          "index": 1
+        },
+        {
+          "text": "Steve Jobs",
+          "correct": false,
+          "index": 2
+        }
+      ],
+      "index": 1,
+      "answer": 1
+    },
+    {
+      "question": "Lagu Apa Ini ?",
+      "attachment": [
+        {
+          "type": "audio",
+          "source": "/audio/upload/upload_1.wav"
+        }
+      ],
+      "list_answer": [
+        {
+          "text": "Lagu Jepang",
+          "correct": false,
+          "index": 4
+        },
+        {
+          "text": "Aja Sendiri",
+          "correct": false,
+          "index": 3
+        },
+        {
+          "text": "Lagu Viral",
+          "correct": false,
+          "index": 5
+        },
+        {
+          "text": "Alan Walker",
+          "correct": false,
+          "index": 2
+        },
+        {
+          "text": "Kurang Tau Juga",
+          "correct": false,
+          "index": 1
+        },
+        {
+          "text": "Gapake Lama",
+          "correct": true,
+          "index": 0
+        }
+      ],
+      "index": 2,
+      "answer": 0
+    },
+    {
+      "question": "Windows Itu OS Yang",
+      "attachment": [],
+      "list_answer": [
+        {
+          "text": "Mantap",
+          "correct": false,
+          "index": 0
+        },
+        {
+          "text": "Jelek",
+          "correct": false,
+          "index": 1
+        },
+        {
+          "text": "Bagus",
+          "correct": false,
+          "index": 3
+        },
+        {
+          "text": "B Aja",
+          "correct": true,
+          "index": 2
+        }
+      ],
+      "index": 0,
+      "answer": 0
+    }
+  ]
+}]

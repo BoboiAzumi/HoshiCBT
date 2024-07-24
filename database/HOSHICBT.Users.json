@@ -1,0 +1,58 @@
+[{
+  "_id": {
+    "$oid": "663c9e47ce2394d3e540a0c1"
+  },
+  "username": "anton",
+  "password": "b919c5543203c534958fd06fb85e3a263471fc2ada70f58e8702f6668e2c7ffe",
+  "role": "instructor",
+  "information": {
+    "fullname": "Anton Wibowo",
+    "email": "anton@email.com",
+    "phone": "",
+    "avatar": ""
+  }
+},
+{
+  "_id": {
+    "$oid": "663e2d3e7b39f9ee08980057"
+  },
+  "username": "rudeus",
+  "password": "b919c5543203c534958fd06fb85e3a263471fc2ada70f58e8702f6668e2c7ffe",
+  "role": "user",
+  "information": {
+    "identity": "000000001",
+    "fullname": "Rudeus Greyrat",
+    "email": "rudeus@email.com",
+    "phone": "",
+    "avatar": ""
+  }
+},
+{
+  "_id": {
+    "$oid": "6644c524ee63821daa2f7040"
+  },
+  "username": "roxy",
+  "password": "b919c5543203c534958fd06fb85e3a263471fc2ada70f58e8702f6668e2c7ffe",
+  "role": "user",
+  "information": {
+    "identity": "000000002",
+    "fullname": "Roxy Migurdia Greyrat",
+    "email": "roxy@email.com",
+    "phone": "",
+    "avatar": ""
+  }
+},
+{
+  "_id": {
+    "$oid": "667103191c98bf63bd24159a"
+  },
+  "username": "budi",
+  "password": "b919c5543203c534958fd06fb85e3a263471fc2ada70f58e8702f6668e2c7ffe",
+  "role": "instructor",
+  "information": {
+    "fullname": "Budi Eka",
+    "email": "anton@email.com",
+    "phone": "",
+    "avatar": ""
+  }
+}]

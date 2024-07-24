@@ -1,0 +1,118 @@
+[{
+  "_id": {
+    "$oid": "664f563454a7efa10e7f8202"
+  },
+  "class_id": {
+    "$oid": "663e11d47b39f9ee0898004b"
+  },
+  "duration": 3600000,
+  "exam_name": "Ujian Floss",
+  "questions": [
+    {
+      "question": "Windows Itu OS Yang",
+      "attachment": [],
+      "list_answer": [
+        {
+          "text": "Mantap",
+          "correct": false
+        },
+        {
+          "text": "Jelek",
+          "correct": false
+        },
+        {
+          "text": "B Aja",
+          "correct": true
+        },
+        {
+          "text": "Bagus",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "question": "Siapa dia ?",
+      "attachment": [
+        {
+          "type": "image",
+          "source": "https://cdn.britannica.com/99/124299-050-4B4D509F/Linus-Torvalds-2012.jpg"
+        }
+      ],
+      "list_answer": [
+        {
+          "text": "Richard Stallman",
+          "correct": false
+        },
+        {
+          "text": "Linus Torvalds",
+          "correct": true
+        },
+        {
+          "text": "Steve Jobs",
+          "correct": false
+        },
+        {
+          "text": "Satoshi Nakamoto",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "question": "Lagu Apa Ini ?",
+      "attachment": [
+        {
+          "type": "audio",
+          "source": "/audio/upload/upload_1.wav"
+        }
+      ],
+      "list_answer": [
+        {
+          "text": "Gapake Lama",
+          "correct": true
+        },
+        {
+          "text": "Kurang Tau Juga",
+          "correct": false
+        },
+        {
+          "text": "Alan Walker",
+          "correct": false
+        },
+        {
+          "text": "Aja Sendiri",
+          "correct": false
+        },
+        {
+          "text": "Lagu Jepang",
+          "correct": false
+        },
+        {
+          "text": "Lagu Viral",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "question": "Yang bukan linux berbasis debian",
+      "attachment": [],
+      "list_answer": [
+        {
+          "text": "Ubuntu",
+          "correct": false
+        },
+        {
+          "text": "Linux Mint",
+          "correct": false
+        },
+        {
+          "text": "Endeavour OS",
+          "correct": true
+        },
+        {
+          "text": "Kali Linux",
+          "correct": false
+        }
+      ]
+    }
+  ]
+}]

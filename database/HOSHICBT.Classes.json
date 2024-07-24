@@ -1,0 +1,127 @@
+[{
+  "_id": {
+    "$oid": "663e11d47b39f9ee0898004b"
+  },
+  "instructor": {
+    "$oid": "663c9e47ce2394d3e540a0c1"
+  },
+  "name": "XII RPL 1",
+  "allow_users": [
+    {
+      "$oid": "663e2d3e7b39f9ee08980057"
+    },
+    {
+      "$oid": "6644c524ee63821daa2f7040"
+    }
+  ],
+  "block_users": []
+},
+{
+  "_id": {
+    "$oid": "66404d067b39f9ee08980061"
+  },
+  "instructor": {
+    "$oid": "663c9e47ce2394d3e540a0c1"
+  },
+  "name": "XI RPL 1",
+  "allow_users": [
+    {
+      "$oid": "663e2d3e7b39f9ee08980057"
+    }
+  ],
+  "block_users": [
+    {
+      "$oid": "663e2d3e7b39f9ee08980057"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "664ec15ad57959f664bb5435"
+  },
+  "instructor": {
+    "$oid": "663c9e47ce2394d3e540a0c1"
+  },
+  "name": "UTBK",
+  "is_public": true,
+  "allow_users": [],
+  "block_users": []
+},
+{
+  "_id": {
+    "$oid": "664ec425d57959f664bb543b"
+  },
+  "instructor": {
+    "$oid": "663c9e47ce2394d3e540a0c1"
+  },
+  "name": "UTBK Khusus",
+  "is_public": false,
+  "allow_users": [],
+  "block_users": []
+},
+{
+  "_id": {
+    "$oid": "6672f2d2df9588d27c4e5130"
+  },
+  "instructor": {
+    "$oid": "667103191c98bf63bd24159a"
+  },
+  "name": "KELAS GUWEH",
+  "is_public": true,
+  "allow_users": [
+    {
+      "$oid": "663e2d3e7b39f9ee08980057"
+    },
+    {
+      "$oid": "6644c524ee63821daa2f7040"
+    }
+  ],
+  "block_users": []
+},
+{
+  "_id": {
+    "$oid": "66744d0645e8cebabbc3c316"
+  },
+  "instructor": {
+    "$oid": "667103191c98bf63bd24159a"
+  },
+  "name": "Kelas SMA",
+  "is_public": true,
+  "allow_users": [
+    {
+      "$oid": "663e2d3e7b39f9ee08980057"
+    }
+  ],
+  "block_users": []
+},
+{
+  "_id": {
+    "$oid": "66781a8162bb0642d1b867d6"
+  },
+  "instructor": {
+    "$oid": "663c9e47ce2394d3e540a0c1"
+  },
+  "name": "Test",
+  "is_public": true,
+  "allow_users": [],
+  "block_users": []
+},
+{
+  "_id": {
+    "$oid": "66a0dcf7f2ec66e6d575ce2a"
+  },
+  "instructor": {
+    "$oid": "667103191c98bf63bd24159a"
+  },
+  "name": "IMPHNEN",
+  "is_public": false,
+  "allow_users": [
+    {
+      "$oid": "6644c524ee63821daa2f7040"
+    },
+    {
+      "$oid": "663e2d3e7b39f9ee08980057"
+    }
+  ],
+  "block_users": []
+}]
