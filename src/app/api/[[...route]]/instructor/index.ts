@@ -2,7 +2,7 @@ import { Context, Hono } from "hono"
 import { authentication } from "../auth/middleware"
 import { JWTVerify, verify } from "../auth/jwtauth"
 import { getCookie } from "hono/cookie"
-import { deleteAllowUser, deleteClassById, findClassById, findClassByInstructorId, getAllowUser, getAllowUserNotIn, insertClass, setAllowUser, updateClassById } from "../db/class"
+import { deleteAllowUser, deleteBlockUser, deleteClassById, findClassById, findClassByInstructorId, getAllowUser, getAllowUserNotIn, getBlockUser, getBlockUserNotIn, insertClass, setAllowUser, setBlockUser, updateClassById } from "../db/class"
 import { Classes } from "../types/class"
 import { deleteExamByClasId } from "../db/exam"
 
@@ -184,6 +184,72 @@ Instructor.post("class/allow/delete", async (c: Context) => {
         return c.json({
             status: "OK",
             data: await deleteAllowUser(class_id, user_id)
+        })
+    }
+    catch(err){
+        return c.json({
+            status: "FAIL",
+        })
+    }
+})
+
+// =====
+
+Instructor.post("class/block", async (c: Context) => {
+    try{
+        const { class_id } = await c.req.json();
+
+        return c.json({
+            status: "OK",
+            data: await getBlockUser(class_id)
+        })
+    }
+    catch(err){
+        return c.json({
+            status: "FAIL"
+        })
+    }
+})
+
+Instructor.post("class/block/not_in", async (c: Context) => {
+    try{
+        const { class_id, q } = await c.req.json();
+
+        return c.json({
+            status: "OK",
+            data: await getBlockUserNotIn(class_id, q)
+        })
+    }
+    catch(err){
+        return c.json({
+            status: "FAIL"
+        })
+    }
+})
+
+Instructor.post("class/block/set", async (c: Context) => {
+    try{
+        const { class_id, user_id } = await c.req.json()
+
+        return c.json({
+            status: "OK",
+            data: await setBlockUser(class_id, user_id)
+        })
+    }
+    catch(err){
+        return c.json({
+            status: "FAIL",
+        })
+    }
+})
+
+Instructor.post("class/block/delete", async (c: Context) => {
+    try{
+        const { class_id, user_id } = await c.req.json()
+
+        return c.json({
+            status: "OK",
+            data: await deleteBlockUser(class_id, user_id)
         })
     }
     catch(err){

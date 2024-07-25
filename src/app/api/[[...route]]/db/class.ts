@@ -163,3 +163,74 @@ export async function deleteAllowUser(class_id: string, user_id: string){
     await collection.updateOne({_id: new ObjectId(class_id)}, {$set: {allow_users: new_allow_users}})
     return true
 }
+
+// =======
+
+export async function getBlockUser(class_id: string){
+    const collection = DB.collection("Classes")
+
+    const class_info: Classes = (await collection.aggregate<Classes>([
+        {
+            $match:{
+                _id: new ObjectId(class_id)
+            }
+        },
+        {
+            $lookup:{
+                from: "Users",
+                    localField: "block_users",
+                    foreignField: "_id",
+                    as: "allow_users_list"
+                }
+            }
+    ]).toArray())[0]
+
+    return class_info.allow_users_list;
+}
+
+export async function getBlockUserNotIn(class_id: string, q: string = ""){
+    const collection_class = DB.collection("Classes")
+    const collection_user = DB.collection("Users")
+
+    const class_info = await collection_class.find({_id: new ObjectId(class_id)}).toArray()
+
+    const allowUserNotIn = await collection_user.find({_id: {$nin: class_info[0].block_users}, role: "user", "information.fullname": {$regex: q, $options: "i"}}).toArray()
+
+    return allowUserNotIn;
+}
+
+export async function setBlockUser(class_id: string, user_id: string){
+    const uid = new ObjectId(user_id)
+    const collection = DB.collection("Classes")
+    const class_info = (await collection.find({_id: new ObjectId(class_id)}).toArray())
+
+    const { block_users } = class_info[0]
+
+    const exist = block_users.some((users: ObjectId) => users.equals(uid))
+    if(exist){
+        return false
+    }
+    
+    block_users.push(new ObjectId(user_id))
+
+    await collection.updateOne({_id: new ObjectId(class_id)}, {$set: {block_users: block_users}})
+    return true
+}
+
+export async function deleteBlockUser(class_id: string, user_id: string){
+    const uid = new ObjectId(user_id)
+    const collection = DB.collection("Classes")
+    const class_info = (await collection.find({_id: new ObjectId(class_id)}).toArray())
+
+    const { block_users } = class_info[0]
+
+    const exist = block_users.some((users: ObjectId) => users.equals(uid))
+    if(!exist){
+        return false
+    }
+    
+    let new_block_users = block_users.filter((v: ObjectId) => !v.equals(uid))
+
+    await collection.updateOne({_id: new ObjectId(class_id)}, {$set: {block_users: new_block_users}})
+    return true
+}
