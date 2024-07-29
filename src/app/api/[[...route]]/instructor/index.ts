@@ -4,7 +4,7 @@ import { JWTVerify, verify } from "../auth/jwtauth"
 import { getCookie } from "hono/cookie"
 import { deleteAllowUser, deleteBlockUser, deleteClassById, findClassById, findClassByInstructorId, getAllowUser, getAllowUserNotIn, getBlockUser, getBlockUserNotIn, insertClass, setAllowUser, setBlockUser, updateClassById } from "../db/class"
 import { Classes } from "../types/class"
-import { deleteExamByClasId, getExamList } from "../db/exam"
+import { deleteExamByClasId, getExamList, newExam } from "../db/exam"
 
 export const Instructor = new Hono()
 
@@ -79,7 +79,7 @@ Instructor.post("class", async(c: Context) => {
 
 Instructor.get("class/find/:class_id", async (c: Context) => {
     try{
-        const { class_id } = await c.req.param()
+        const { class_id } = c.req.param()
         const class_info = await findClassById(class_id);
 
         return c.json({
@@ -98,7 +98,7 @@ Instructor.post("class/update", async (c: Context) => {
     try{
         const class_object: Classes = await c.req.json();
 
-        await updateClassById(class_object._id, class_object)
+        await updateClassById(<string>class_object._id, class_object)
 
         return c.json({
             status: "OK"
@@ -266,6 +266,43 @@ Instructor.get("class/exam", async (c: Context) => {
 })
 
 Instructor.get("class/exam/:class_id", async (c: Context) => {
+    try{
+        const { class_id } = c.req.param()
+        const exam_list = await getExamList(class_id)
+
+        return c.json({
+            status: "OK",
+            data: exam_list
+        })
+    }
+    catch(err){
+        return c.json({
+            status: "FAIL",
+        })
+    }
+})
+
+
+Instructor.post("class/exam/:class_id", async (c: Context) => {
+    try{
+        const { class_id } = c.req.param()
+        const { exam_name } = await c.req.json()
+
+        await newExam(class_id, exam_name)
+
+        return c.json({
+            status: "OK"
+        })
+    }
+    catch(err){
+        return c.json({
+            status: "FAIL",
+            message: err
+        })
+    }
+})
+
+Instructor.get("class/exam/:class_id/:exam_id", async (c: Context) => {
     try{
         const { class_id } = c.req.param()
 

@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb"
 import { DB } from "./connection"
 import { Answer, Exam, Questions } from "../types/exam";
+import { StringifyOptions } from "querystring";
 
 async function is_inactive(class_id: string, exam_id: string){
     const collection = DB.collection("Exam_Session");
@@ -263,20 +264,32 @@ export async function getResultTest(class_id: string, exam_id: string, user_id: 
 }
 
 export async function deleteExamByClasId(class_id: string){
-    const exam = DB.collection("Exam")
+    const collection = DB.collection("Exam")
     const exam_session = DB.collection("Exam_Session")
 
-    await exam.deleteMany({class_id: new ObjectId(class_id)})
+    await collection.deleteMany({class_id: new ObjectId(class_id)})
     await exam_session.deleteMany({class_id: new ObjectId(class_id)})
 }
 
 export async function getExamList(class_id: string){
-    const exam = DB.collection("Exam")    
-    const exam_list: Exam[] = (await exam.find({class_id: new ObjectId(class_id)}).project({questions: 0, duration: 0}).toArray()) as Exam[]
+    const collection = DB.collection("Exam")    
+    const exam_list: Exam[] = (await collection.find({class_id: new ObjectId(class_id)}).project({questions: 0, duration: 0}).toArray()) as Exam[]
 
     return exam_list
 }
 
-export async function getExam(class_id: string, exam_id: string){
+export async function newExam(class_id: string, exam_name: string){
+    const collection = DB.collection("Exam")
+    let dataToInsert = {
+        class_id: new ObjectId(class_id),
+        exam_name,
+        duration: 0,
+        questions: []
+    }
+    
+    await collection.insertOne(dataToInsert)
+}
+
+export async function getExam(class_id: string, exam_id: StringifyOptions){
 
 }

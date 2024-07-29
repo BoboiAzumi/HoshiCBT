@@ -1,7 +1,7 @@
 import { Users } from "./user"
 
 export type Classes = {
-    _id: string,
+    _id?: string,
     instructor: string,
     name: string,
     is_public: boolean,
