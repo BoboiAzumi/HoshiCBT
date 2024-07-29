@@ -269,3 +269,14 @@ export async function deleteExamByClasId(class_id: string){
     await exam.deleteMany({class_id: new ObjectId(class_id)})
     await exam_session.deleteMany({class_id: new ObjectId(class_id)})
 }
+
+export async function getExamList(class_id: string){
+    const exam = DB.collection("Exam")    
+    const exam_list: Exam[] = (await exam.find({class_id: new ObjectId(class_id)}).project({questions: 0, duration: 0}).toArray()) as Exam[]
+
+    return exam_list
+}
+
+export async function getExam(class_id: string, exam_id: string){
+
+}

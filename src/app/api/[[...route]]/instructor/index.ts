@@ -4,7 +4,7 @@ import { JWTVerify, verify } from "../auth/jwtauth"
 import { getCookie } from "hono/cookie"
 import { deleteAllowUser, deleteBlockUser, deleteClassById, findClassById, findClassByInstructorId, getAllowUser, getAllowUserNotIn, getBlockUser, getBlockUserNotIn, insertClass, setAllowUser, setBlockUser, updateClassById } from "../db/class"
 import { Classes } from "../types/class"
-import { deleteExamByClasId } from "../db/exam"
+import { deleteExamByClasId, getExamList } from "../db/exam"
 
 export const Instructor = new Hono()
 
@@ -250,6 +250,30 @@ Instructor.post("class/block/delete", async (c: Context) => {
         return c.json({
             status: "OK",
             data: await deleteBlockUser(class_id, user_id)
+        })
+    }
+    catch(err){
+        return c.json({
+            status: "FAIL",
+        })
+    }
+})
+
+Instructor.get("class/exam", async (c: Context) => {
+    return c.json({
+        status: "FAIL"
+    })
+})
+
+Instructor.get("class/exam/:class_id", async (c: Context) => {
+    try{
+        const { class_id } = c.req.param()
+
+        const exam_list = await getExamList(class_id)
+
+        return c.json({
+            status: "OK",
+            data: exam_list
         })
     }
     catch(err){
