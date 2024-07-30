@@ -290,6 +290,9 @@ export async function newExam(class_id: string, exam_name: string){
     await collection.insertOne(dataToInsert)
 }
 
-export async function getExam(class_id: string, exam_id: StringifyOptions){
-
+export async function getExam(class_id: string, exam_id: string){
+    const collection = DB.collection("Exam")
+    const exam = collection.find({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)})
+    
+    return exam
 }
