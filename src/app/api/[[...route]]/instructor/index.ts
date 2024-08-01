@@ -4,7 +4,7 @@ import { JWTVerify, verify } from "../auth/jwtauth"
 import { getCookie } from "hono/cookie"
 import { deleteAllowUser, deleteBlockUser, deleteClassById, findClassById, findClassByInstructorId, getAllowUser, getAllowUserNotIn, getBlockUser, getBlockUserNotIn, insertClass, setAllowUser, setBlockUser, updateClassById } from "../db/class"
 import { Classes } from "../types/class"
-import { deleteExamByClasId, getExamList, newExam } from "../db/exam"
+import { deleteExamByClasId, getExam, getExamList, newExam } from "../db/exam"
 
 export const Instructor = new Hono()
 
@@ -304,9 +304,9 @@ Instructor.post("class/exam/:class_id", async (c: Context) => {
 
 Instructor.get("class/exam/:class_id/:exam_id", async (c: Context) => {
     try{
-        const { class_id } = c.req.param()
+        const { class_id, exam_id } = c.req.param()
 
-        const exam_list = await getExamList(class_id)
+        const exam_list = await getExam(class_id, exam_id)
 
         return c.json({
             status: "OK",

@@ -292,7 +292,7 @@ export async function newExam(class_id: string, exam_name: string){
 
 export async function getExam(class_id: string, exam_id: string){
     const collection = DB.collection("Exam")
-    const exam = collection.find({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)})
+    const exam = await collection.find({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}).toArray()
     
-    return exam
+    return exam[0]
 }

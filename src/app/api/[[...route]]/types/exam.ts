@@ -1,5 +1,6 @@
 export type Attachment = {
     type: "image" | "audio",
+    from: "upload" | "url"
     source: string
 }
 
