@@ -42,6 +42,12 @@ export default function ExamEdit(){
         setQuestions(quests)
     }
 
+    function deleteQuestion(index: number){
+        let quests = [...questions]
+        quests = quests.filter((v, i) => i != index)
+        setQuestions(quests)
+    }
+
     useEffect(() => {
         fetch("/api/auth/")
             .then((r) => r.json())
@@ -168,6 +174,9 @@ export default function ExamEdit(){
                                         ))}
                                         <button className="text-center w-full py-2 border border-slate-200 my-2 rounded-md hover:bg-slate-200">
                                             Add Answer
+                                        </button>
+                                        <button className="border shadow-sm shadow-gray-200 w-full px-5 py-2 bg-red-400 hover:bg-red-500 rounded-md text-white" onClick={() => deleteQuestion(i)}>
+                                            Delete Question
                                         </button>
                                     </div>
                                 ))}
