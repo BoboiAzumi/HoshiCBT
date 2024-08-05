@@ -4,7 +4,8 @@ import { JWTVerify, verify } from "../auth/jwtauth"
 import { getCookie } from "hono/cookie"
 import { deleteAllowUser, deleteBlockUser, deleteClassById, findClassById, findClassByInstructorId, getAllowUser, getAllowUserNotIn, getBlockUser, getBlockUserNotIn, insertClass, setAllowUser, setBlockUser, updateClassById } from "../db/class"
 import { Classes } from "../types/class"
-import { deleteExamByClasId, getExam, getExamList, newExam } from "../db/exam"
+import { deleteExamByClasId, getExam, getExamList, newExam, saveExam } from "../db/exam"
+import { Questions } from "../types/exam"
 
 export const Instructor = new Hono()
 
@@ -311,6 +312,45 @@ Instructor.get("class/exam/:class_id/:exam_id", async (c: Context) => {
         return c.json({
             status: "OK",
             data: exam_list
+        })
+    }
+    catch(err){
+        return c.json({
+            status: "FAIL",
+        })
+    }
+})
+
+Instructor.post("class/exam/:class_id/:exam_id", async (c: Context) => {
+    try{
+        const { class_id, exam_id } = c.req.param()
+
+        const { exam_name, duration, questions } = await c.req.json()
+
+        await saveExam(class_id, exam_id, exam_name, duration, questions as Questions)
+
+        return c.json({
+            status: "OK"
+        })
+    }
+    catch(err){
+        return c.json({
+            status: "FAIL",
+        })
+    }
+})
+
+Instructor.post("class/exam/:class_id/:exam_id/question/", async (c: Context) => {
+    try{
+        const { class_id, exam_id } = c.req.param()
+        const { method, data } : { method: string, data: object} = await c.req.json()
+
+        if(method.toUpperCase() == "NEW_QUESTION"){
+
+        }
+
+        return c.json({
+            status: "OK"
         })
     }
     catch(err){

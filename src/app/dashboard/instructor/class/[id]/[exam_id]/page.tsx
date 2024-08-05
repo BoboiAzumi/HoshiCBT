@@ -11,6 +11,9 @@ export default function ExamEdit(){
     let [userData, setUserData] = useState<Users>()
     let [load, setLoad] = useState(true)
     let [duration, setDuration] = useState("")
+    let [millis, setMillis] = useState(0)
+    let [saved, setSaved] = useState(true)
+    let [process, setProcess] = useState(false)
     let [examName, setExamName] = useState("")
     let [questions, setQuestions] = useState([] as Questions[])
     const { id, exam_id } = useParams()
@@ -28,10 +31,6 @@ export default function ExamEdit(){
         setExamName(json.data.exam_name)
     }
 
-    async function saving(){
-
-    }
-
     function addQuestion(){
         let quests = [...questions]
         quests.push({
@@ -40,12 +39,49 @@ export default function ExamEdit(){
             list_answer: [] as Answer[]
         } as Questions)
         setQuestions(quests)
+        setSaved(false)
     }
 
     function deleteQuestion(index: number){
         let quests = [...questions]
         quests = quests.filter((v, i) => i != index)
         setQuestions(quests)
+        setSaved(false)
+    }
+
+    function addAnswer(question_index: number){
+        let qs = [...questions]
+        qs[question_index].list_answer.push({
+            text: "",
+            correct: false
+        })
+        setQuestions(qs)
+        setSaved(false)
+    }
+
+    function saving(){
+        setProcess(true)
+        fetch(`/api/instructor/class/exam/${id}/${exam_id}`, {
+            method: "POST",
+            body: JSON.stringify({
+                exam_name: examName,
+                duration: millis,
+                questions: questions
+            })
+        }).then((res) => res.json())
+        .then((json) => {
+            setProcess(false)
+            if(!(json.status == "FAIL")){
+                setSaved(true)
+            }
+        })
+    }
+
+    function correctToggle(question_index: number, answer_index: number){
+        let qs = [...questions]
+        qs[question_index].list_answer[answer_index].correct = !qs[question_index].list_answer[answer_index].correct
+        setQuestions(qs)
+        setSaved(false)
     }
 
     useEffect(() => {
@@ -70,6 +106,14 @@ export default function ExamEdit(){
             })
     }, [])
 
+    useEffect(() => {
+        const splt = duration.split(":")
+        const millis = (parseInt(splt[0]) * 60 * 60 * 1000) + (parseInt(splt[1]) * 60 * 1000)
+        setMillis(millis)
+
+        return
+    }, [duration])
+
     return (
         <>
             <Splash isLoad={load}></Splash>
@@ -90,17 +134,34 @@ export default function ExamEdit(){
                                 <input 
                                     type="text"
                                     value={examName}
+                                    onChange={(ev) => {
+                                        setSaved(false)
+                                        setExamName(ev.target.value)
+                                    }}
                                     className="w-full border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md"
                                 />
                                 <h4 className="my-2">Duration</h4>
                                 <input 
                                     type="time"
                                     value={duration}
-                                    onChange={(ev) => {
-
+                                    onChange={async (ev) => {
+                                        setSaved(false)
+                                        setDuration(ev.target.value)
                                     }}
                                     className="w-full border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md"
                                 />
+                                {!saved? (
+                                    <>
+                                        <input onClick={(ev) => saving()} type="button" value="Save" className={"w-full border border-slate-200 bg-[#ff7854] hover:bg-[#ff4c1a] text-gray-100 mt-5 px-3 py-2 focus:outline-[#ff7854] rounded-md cursor-pointer" + (process? " hidden" : "")}/>
+                                        <button className={"w-full flex justify-center border border-slate-200 bg-[#ff4c1a] text-gray-100 focus:outline-[#ff7854] rounded-md cursor-pointer mt-5" + (process? "" : " hidden")} disabled>
+                                            <img
+                                                src={"/img/load.svg"}
+                                                alt="logo"
+                                                className="w-[1.5rem] object-contain my-2"
+                                            />
+                                        </button>
+                                    </>
+                                ) : (<></>)}
                                 <h4 className="my-2">Questions</h4>
                                 {questions.map((v: Questions, i: number) => (
                                     <div className="w-full p-5 border border-slate-300 my-2 rounded-md">
@@ -113,6 +174,7 @@ export default function ExamEdit(){
                                                     let q = [...questions]
                                                     q[i].question = ev.target.value
                                                     setQuestions(q)
+                                                    setSaved(false)
                                                 }
                                             }
                                             className="w-full border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md"
@@ -147,20 +209,25 @@ export default function ExamEdit(){
                                         <h4 className="my-2">Answer</h4>
                                         {v.list_answer.map((w: Answer, j: number) => (
                                             <div className="flex">
-                                                <div className="w-[70%] flex flex-col justify-center items-center">
+                                                <div className="w-[60%] flex flex-col justify-center items-center">
                                                     <input 
                                                         type="text"
                                                         value={w.text}
+                                                        onChange={(ev) => {
+                                                            let qs = [...questions]
+                                                            qs[i].list_answer[j].text = ev.target.value
+                                                            setQuestions(qs)
+                                                        }}
                                                         className="w-full border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md"
                                                     />
                                                 </div>
-                                                <div className="w-[15%] flex flex-col justify-center items-center">
+                                                <div className="w-[25%] flex flex-col justify-center items-center">
                                                     {w.correct ? (
-                                                        <button className="border shadow-sm shadow-gray-200 w-full px-5 py-2 bg-red-400 hover:bg-red-500 rounded-md text-white">
-                                                            Remove Correct
+                                                        <button className="border shadow-sm shadow-gray-200 w-full px-5 py-2 bg-red-400 hover:bg-red-500 rounded-md text-white" onClick={() => correctToggle(i, j)}>
+                                                            Unset Correct
                                                         </button>
                                                     ) : (
-                                                        <button className="border shadow-sm shadow-gray-200 w-full px-5 py-2 bg-blue-400 hover:bg-blue-500 rounded-md text-white">
+                                                        <button className="border shadow-sm shadow-gray-200 w-full px-5 py-2 bg-blue-400 hover:bg-blue-500 rounded-md text-white" onClick={() => correctToggle(i, j)}>
                                                             Set Correct
                                                         </button>
                                                     )}
@@ -172,7 +239,7 @@ export default function ExamEdit(){
                                                 </div>
                                             </div>
                                         ))}
-                                        <button className="text-center w-full py-2 border border-slate-200 my-2 rounded-md hover:bg-slate-200">
+                                        <button className="text-center w-full py-2 border border-slate-200 my-2 rounded-md hover:bg-slate-200" onClick={(ev) => addAnswer(i)}>
                                             Add Answer
                                         </button>
                                         <button className="border shadow-sm shadow-gray-200 w-full px-5 py-2 bg-red-400 hover:bg-red-500 rounded-md text-white" onClick={() => deleteQuestion(i)}>
