@@ -1,6 +1,7 @@
 "use client"
 import { Answer, Attachment, Questions } from "@/app/api/[[...route]]/types/exam";
 import { Users } from "@/app/api/[[...route]]/types/user";
+import Modal from "@/components/modal";
 import Navbar from "@/components/navbar";
 import Splash from "@/components/splash";
 import { UserData } from "@/context/UserData";
@@ -15,7 +16,10 @@ export default function ExamEdit(){
     let [saved, setSaved] = useState(true)
     let [process, setProcess] = useState(false)
     let [examName, setExamName] = useState("")
+    let [modalAttachment, setModalAttachment] = useState(false)
     let [questions, setQuestions] = useState([] as Questions[])
+    let [drag, setDrag] = useState(false)
+    let [files, setFiles] = useState({} as File)
     const { id, exam_id } = useParams()
 
     async function loadExamData(){
@@ -117,6 +121,59 @@ export default function ExamEdit(){
     return (
         <>
             <Splash isLoad={load}></Splash>
+            <Modal show={modalAttachment} setShow={setModalAttachment} className="bg-white p-5 w-[70vw] min-h-[40vh] rounded-md">
+                <h4 className="text-gray-600">File Type</h4>
+                <select className="w-full border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md text-gray-600">
+                    <option value="">Select</option>
+                    <option value="Image">Image</option>
+                    <option value="Audio">Audio</option>
+                </select>
+                <h4 className="text-gray-600">Url</h4>
+                <input
+                    type="text"
+                    placeholder="https://foo.bar/"
+                    className="w-full border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md"
+                />
+                <h4 className="text-gray-600 text-center my-2">Or</h4>
+                <h4 className="text-gray-600">File Upload</h4>
+                <div className={"bg-slate-200 w-full min-h-[6rem] rounded-md flex flex-col justify-center items-center " + (drag ? "border border-[#ff7854]" : "")} 
+                    onDragOver={(ev) => {
+                        ev.preventDefault()
+                        setDrag(true)
+                    }}
+                    onDragExit={(ev) => {
+                        ev.preventDefault()
+                        setDrag(false)
+                    }}
+                    onDrop={(ev) => {
+                        ev.preventDefault()
+                        setFiles(ev.dataTransfer.files[0])
+                        setDrag(false)
+                    }}>
+                    { drag ? (
+                        <h4 className="text-gray-900">Drag Here</h4>
+                    ) : (
+                        <>
+                            {!(files.name) ? (
+                                <input 
+                                    type="file"
+                                    onChange={(ev) => setFiles(ev.target.files ? ev.target.files[0] : {} as File)}
+                                />
+                            ) : (
+                                <div className="flex items-center">
+                                    <h4 className="text-gray-900 mx-2">{files.name}</h4>
+                                    <button 
+                                        className="border shadow-sm shadow-gray-200 px-5 py-2 mx-2 bg-red-400 hover:bg-red-500 rounded-md text-white"
+                                        onClick={(ev) => setFiles({} as File)}
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
+            </Modal>
             <div className={"bg-white w-full min-h-[100vh]"+ (load? " hidden": "")}>
                 <UserData.Provider value={userData as Users}>
                     <Navbar/>
@@ -203,7 +260,8 @@ export default function ExamEdit(){
                                                 </div>
                                             </div>
                                         ))}
-                                        <button className="text-center w-full py-2 border border-slate-200 my-2 rounded-md hover:bg-slate-200">
+                                        <button className="text-center w-full py-2 border border-slate-200 my-2 rounded-md hover:bg-slate-200"
+                                            onClick={() => setModalAttachment(true)}>
                                             Add Attachment
                                         </button>
                                         <h4 className="my-2">Answer</h4>
@@ -233,7 +291,14 @@ export default function ExamEdit(){
                                                     )}
                                                 </div>
                                                 <div className="w-[15%] flex flex-col justify-center items-center">
-                                                    <button className="border shadow-sm shadow-gray-200 w-full px-5 py-2 bg-red-400 hover:bg-red-500 rounded-md text-white">
+                                                    <button className="border shadow-sm shadow-gray-200 w-full px-5 py-2 bg-red-400 hover:bg-red-500 rounded-md text-white" 
+                                                        onClick={(ev) => {
+                                                            let qs = [...questions]
+                                                            let as = qs[i].list_answer.filter((_, k: number) => k != j)
+                                                            qs[i].list_answer = as
+                                                            setQuestions(qs)
+                                                            setSaved(false)
+                                                        }}>
                                                         Delete
                                                     </button>
                                                 </div>
