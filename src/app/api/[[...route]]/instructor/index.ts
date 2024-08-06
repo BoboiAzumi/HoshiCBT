@@ -4,8 +4,9 @@ import { JWTVerify, verify } from "../auth/jwtauth"
 import { getCookie } from "hono/cookie"
 import { deleteAllowUser, deleteBlockUser, deleteClassById, findClassById, findClassByInstructorId, getAllowUser, getAllowUserNotIn, getBlockUser, getBlockUserNotIn, insertClass, setAllowUser, setBlockUser, updateClassById } from "../db/class"
 import { Classroom } from "../types/class"
-import { deleteExamByClasId, getExam, getExamList, newExam, saveExam } from "../db/exam"
+import { deleteExamByClasId, getExam, getExamList, insertNewAnswer, insertNewAttachment, insertNewQuestion, newExam, saveExam } from "../db/exam"
 import { Questions } from "../types/exam"
+import { upload } from "../upload"
 
 export const Instructor = new Hono()
 
@@ -32,6 +33,8 @@ Instructor.use(async (c: Context, next: Function) => {
     c.set("encoded", encoded)
     await next()
 })
+
+Instructor.post("/uploads", upload)
 
 Instructor.get("/", async (c: Context) => {
     return c.json({
@@ -340,13 +343,19 @@ Instructor.post("class/exam/:class_id/:exam_id", async (c: Context) => {
     }
 })
 
-Instructor.post("class/exam/:class_id/:exam_id/question/", async (c: Context) => {
+Instructor.post("class/exam/:class_id/:exam_id/question", async (c: Context) => {
     try{
         const { class_id, exam_id } = c.req.param()
-        const { method, data } : { method: string, data: object} = await c.req.json()
+        const { method, data } : { method: string, data: any} = await c.req.json()
 
         if(method.toUpperCase() == "NEW_QUESTION"){
-
+            insertNewQuestion(class_id, exam_id)
+        }
+        else if(method.toUpperCase() == "NEW_ATTACHMENT"){
+            insertNewAttachment(class_id, exam_id, data.i, {type: data.type, from: data.from, source: data.source})
+        }
+        else if(method.toUpperCase() == "NEW_ANSWER"){
+            insertNewAnswer(class_id, exam_id, data.i)
         }
 
         return c.json({

@@ -21,10 +21,10 @@ export async function upload(c: Context){
                 .digest("hex")
     
             let filename = ""
-            if(type == "Image"){
+            if(type == "image"){
                 filename = path.join(<string>process.env.UPLOAD_MAIN_DIR, <string>process.env.UPLOAD_IMG_DIR, `${hash}.${extension}`)
             }
-            else if(type == "Audio"){
+            else if(type == "audio"){
                 filename = path.join(<string>process.env.UPLOAD_MAIN_DIR, <string>process.env.UPLOAD_AUDIO_DIR, `${hash}.${extension}`)
             }
             else{
@@ -40,7 +40,7 @@ export async function upload(c: Context){
     
             return c.json({
                 status: "OK",
-                path: `/api/uploads/${type == "Image" ? "img": "audio"}/${hash}.${extension}`
+                path: `/api/uploads/${type == "image" ? "img": "audio"}/${hash}.${extension}`
             })
         }
         else{

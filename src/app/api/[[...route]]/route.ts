@@ -17,7 +17,7 @@ app.route("/auth", auth)
 app.route("/instructor", Instructor)
 app.route("/user", User)
 
-app.post("/uploads", upload)
+//app.post("/uploads", upload)
 
 app.get("/uploads/:type/:file", (c: Context) => {
     try{

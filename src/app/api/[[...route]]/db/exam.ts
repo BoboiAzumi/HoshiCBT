@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import { DB } from "./connection"
-import { Answer, Exam, Questions } from "../types/exam";
+import { Answer, Attachment, Exam, Questions } from "../types/exam";
 import { StringifyOptions } from "querystring";
 
 async function is_inactive(class_id: string, exam_id: string){
@@ -302,4 +302,46 @@ export async function saveExam(class_id: string, exam_id: string, exam_name: str
     await collection.updateOne({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}, {$set: {exam_name, duration, questions}})
 
     return true
+}
+
+export async function insertNewQuestion(class_id: string, exam_id: string){
+    const collection = DB.collection("Exam")
+    const exam = (await collection.find({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}).toArray())[0]
+    const { questions } = exam
+
+    questions.push({
+        question: "",
+        attachment: [] as Attachment[],
+        list_answer: [] as Answer[]
+    } as Questions)
+
+    await collection.updateOne({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}, {$set:{questions: questions}})
+}
+
+export async function insertNewAttachment(class_id: string, exam_id: string, index: number, attachment: Attachment){
+    const collection = DB.collection("Exam")
+    const exam = (await collection.find({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}).toArray())[0]
+    const { questions } = exam
+
+    questions.push({
+        question: "",
+        attachment: [] as Attachment[],
+        list_answer: [] as Answer[]
+    } as Questions)
+
+    await collection.updateOne({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}, {$set:{questions: questions}})
+}
+
+export async function insertNewAnswer(class_id: string, exam_id: string, index: number){
+    const collection = DB.collection("Exam")
+    const exam = (await collection.find({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}).toArray())[0]
+    const { questions } = exam
+
+    questions.push({
+        question: "",
+        attachment: [] as Attachment[],
+        list_answer: [] as Answer[]
+    } as Questions)
+
+    await collection.updateOne({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}, {$set:{questions: questions}})
 }

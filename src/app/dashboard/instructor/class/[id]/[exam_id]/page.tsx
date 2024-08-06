@@ -4,6 +4,7 @@ import { Users } from "@/app/api/[[...route]]/types/user";
 import LoadingModal from "@/components/loadingModal";
 import Modal from "@/components/modal";
 import Navbar from "@/components/navbar";
+import QuestionsForm from "@/components/questionsForm";
 import Splash from "@/components/splash";
 import { UserData } from "@/context/UserData";
 import { useParams } from "next/navigation";
@@ -23,6 +24,8 @@ export default function ExamEdit(){
     let [file, setFile] = useState({} as File)
     let [fileType, setFileType] = useState("")
     let [uploadLoading, setUploadLoading] = useState(false)
+    let [selectedQIndex, setSelectedQIndex] = useState(0)
+    let [selectedAIndex, setSelectedAIndex] = useState(0)
     const { id, exam_id } = useParams()
 
     async function loadExamData(){
@@ -38,15 +41,18 @@ export default function ExamEdit(){
         setExamName(json.data.exam_name)
     }
 
-    function addQuestion(){
-        let quests = [...questions]
-        quests.push({
-            question: "",
-            attachment: [] as Attachment[],
-            list_answer: [] as Answer[]
-        } as Questions)
-        setQuestions(quests)
-        setSaved(false)
+    async function addQuestion(){
+        try{
+            const res = await fetch(`/api/instructor/exam/${id}/${exam_id}/question`, {
+                method: "POST",
+                body: JSON.stringify({
+                    method: "NEW_QUESTION"
+                })
+            })
+        }
+        catch{
+            alert("error")
+        }
     }
 
     function deleteQuestion(index: number){
@@ -97,14 +103,25 @@ export default function ExamEdit(){
         const formData = new FormData()
         formData.append("file", file)
         formData.append("type", fileType)
-        fetch("/api/uploads", {
+        fetch("/api/instructor/uploads", {
             method: "POST",
             body: formData
         }).then((res) => {
             return res.json()
-        }).then((json) => {
-            console.log(json)
+        }).then(async (json) => {
+            if(json.status != "FAIL"){
+                let qs = [...questions]
+                qs[selectedQIndex].attachment.push({
+                    type: fileType == "image" ? "image" : "audio",
+                    from: "upload",
+                    source: json.path
+                })
+                setQuestions(qs)
+                saving()
+            }
             setUploadLoading(false)
+            setFile({} as File)
+            setFileType("")
         })
     }
 
@@ -148,13 +165,14 @@ export default function ExamEdit(){
                     className={"w-[10rem] object-contain my-5 animate-bounce"}
                 />
             </LoadingModal>
+
             <Modal show={modalAttachment} setShow={setModalAttachment} className="bg-white p-5 w-[70vw] min-h-[40vh] rounded-md">
                 <h4 className="text-gray-600">File Type</h4>
                 <select className="w-full border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md text-gray-600"
                     onChange={(ev) => setFileType(ev.target.value)}>
-                    <option value="">Select</option>
-                    <option value="Image">Image</option>
-                    <option value="Audio">Audio</option>
+                    <option value="" selected={fileType == "" ? true : false}>Select</option>
+                    <option value="image" selected={fileType == "image" ? true : false}>Image</option>
+                    <option value="audio" selected={fileType == "audio" ? true : false}>Audio</option>
                 </select>
                 {fileType != "" ? (
                     <>
@@ -215,6 +233,7 @@ export default function ExamEdit(){
                     <></>
                 )}
             </Modal>
+
             <div className={"bg-white w-full min-h-[100vh]"+ (load? " hidden": "")}>
                 <UserData.Provider value={userData as Users}>
                     <Navbar/>
@@ -262,96 +281,19 @@ export default function ExamEdit(){
                                 ) : (<></>)}
                                 <h4 className="my-2">Questions</h4>
                                 {questions.map((v: Questions, i: number) => (
-                                    <div className="w-full p-5 border border-slate-300 my-2 rounded-md">
-                                        <h4 className="mb-2">Question</h4>
-                                        <input 
-                                            type="text"
-                                            value={v.question}
-                                            onChange={
-                                                (ev) => {
-                                                    let q = [...questions]
-                                                    q[i].question = ev.target.value
-                                                    setQuestions(q)
-                                                    setSaved(false)
-                                                }
-                                            }
-                                            className="w-full border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md"
-                                        />
-                                        <h4 className="my-2">Attachment</h4>
-                                        {v.attachment.map((w: Attachment, j: number) => (
-                                            <div className="flex">
-                                                <div className="w-[80%]">
-                                                    {w.type == "image" ? (
-                                                        <img 
-                                                            width={75}
-                                                            height={75}
-                                                            src={w.source}
-                                                            alt="Attachment"
-                                                        />
-                                                    ) : (<audio controls>
-                                                        <source src={w.source} 
-                                                                width={200}
-                                                                height={0}/>
-                                                    </audio>)}
-                                                </div>
-                                                <div className="w-[20%] flex flex-col justify-center items-center">
-                                                    <button className="border shadow-sm shadow-gray-200 w-full px-5 py-2 bg-red-400 hover:bg-red-500 rounded-md text-white">
-                                                        Delete
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                        <button className="text-center w-full py-2 border border-slate-200 my-2 rounded-md hover:bg-slate-200"
-                                            onClick={() => setModalAttachment(true)}>
-                                            Add Attachment
-                                        </button>
-                                        <h4 className="my-2">Answer</h4>
-                                        {v.list_answer.map((w: Answer, j: number) => (
-                                            <div className="flex">
-                                                <div className="w-[60%] flex flex-col justify-center items-center">
-                                                    <input 
-                                                        type="text"
-                                                        value={w.text}
-                                                        onChange={(ev) => {
-                                                            let qs = [...questions]
-                                                            qs[i].list_answer[j].text = ev.target.value
-                                                            setQuestions(qs)
-                                                        }}
-                                                        className="w-full border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md"
-                                                    />
-                                                </div>
-                                                <div className="w-[25%] flex flex-col justify-center items-center">
-                                                    {w.correct ? (
-                                                        <button className="border shadow-sm shadow-gray-200 w-full px-5 py-2 bg-red-400 hover:bg-red-500 rounded-md text-white" onClick={() => correctToggle(i, j)}>
-                                                            Unset Correct
-                                                        </button>
-                                                    ) : (
-                                                        <button className="border shadow-sm shadow-gray-200 w-full px-5 py-2 bg-blue-400 hover:bg-blue-500 rounded-md text-white" onClick={() => correctToggle(i, j)}>
-                                                            Set Correct
-                                                        </button>
-                                                    )}
-                                                </div>
-                                                <div className="w-[15%] flex flex-col justify-center items-center">
-                                                    <button className="border shadow-sm shadow-gray-200 w-full px-5 py-2 bg-red-400 hover:bg-red-500 rounded-md text-white" 
-                                                        onClick={(ev) => {
-                                                            let qs = [...questions]
-                                                            let as = qs[i].list_answer.filter((_, k: number) => k != j)
-                                                            qs[i].list_answer = as
-                                                            setQuestions(qs)
-                                                            setSaved(false)
-                                                        }}>
-                                                        Delete
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                        <button className="text-center w-full py-2 border border-slate-200 my-2 rounded-md hover:bg-slate-200" onClick={(ev) => addAnswer(i)}>
-                                            Add Answer
-                                        </button>
-                                        <button className="border shadow-sm shadow-gray-200 w-full px-5 py-2 bg-red-400 hover:bg-red-500 rounded-md text-white" onClick={() => deleteQuestion(i)}>
-                                            Delete Question
-                                        </button>
-                                    </div>
+                                    <QuestionsForm
+                                        v={v}
+                                        i={i}
+                                        questions={questions}
+                                        setQuestions={setQuestions}
+                                        setSaved={setSaved}
+                                        setModalAttachment={setModalAttachment}
+                                        setSelectedQIndex={setSelectedQIndex}
+                                        setSelectedAIndex={setSelectedAIndex}
+                                        correctToggle={correctToggle}
+                                        addAnswer={addAnswer}
+                                        deleteQuestion={deleteQuestion}
+                                    />
                                 ))}
                             <button className="text-center w-full py-2 border border-slate-200 my-2 rounded-md hover:bg-slate-200" onClick={() => addQuestion()}>
                                 Add Question
