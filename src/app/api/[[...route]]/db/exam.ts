@@ -303,13 +303,3 @@ export async function saveExam(class_id: string, exam_id: string, exam_name: str
 
     return true
 }
-
-export async function insertNewQuestion(class_id: string, exam_id: string){
-    const collection = DB.collection("Exam")
-    const exam = (await collection.find({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}).toArray())[0]
-    const { questions } = exam
-
-    questions.push({
-
-    } as Questions)
-}

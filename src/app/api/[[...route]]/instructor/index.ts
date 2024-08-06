@@ -3,7 +3,7 @@ import { authentication } from "../auth/middleware"
 import { JWTVerify, verify } from "../auth/jwtauth"
 import { getCookie } from "hono/cookie"
 import { deleteAllowUser, deleteBlockUser, deleteClassById, findClassById, findClassByInstructorId, getAllowUser, getAllowUserNotIn, getBlockUser, getBlockUserNotIn, insertClass, setAllowUser, setBlockUser, updateClassById } from "../db/class"
-import { Classes } from "../types/class"
+import { Classroom } from "../types/class"
 import { deleteExamByClasId, getExam, getExamList, newExam, saveExam } from "../db/exam"
 import { Questions } from "../types/exam"
 
@@ -97,7 +97,7 @@ Instructor.get("class/find/:class_id", async (c: Context) => {
 
 Instructor.post("class/update", async (c: Context) => {
     try{
-        const class_object: Classes = await c.req.json();
+        const class_object: Classroom = await c.req.json();
 
         await updateClassById(<string>class_object._id, class_object)
 

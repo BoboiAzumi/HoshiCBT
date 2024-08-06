@@ -1,12 +1,12 @@
 import { ObjectId } from "mongodb"
 import { DB } from "./connection"
-import { Classes, ClassesData } from "../types/class"
+import { Classroom, ClassroomData } from "../types/class"
 
-export async function findClassByUserId(id: string): Promise<ClassesData[]>{
+export async function findClassByUserId(id: string): Promise<ClassroomData[]>{
     const classCollection = DB.collection("Classes");
-    let ClassData: ClassesData[] = [];
+    let ClassData: ClassroomData[] = [];
     
-    let classList: Classes[] = await classCollection.aggregate<Classes>([{
+    let classList: Classroom[] = await classCollection.aggregate<Classroom>([{
             $match: {
                 $or: [
                     {
@@ -44,14 +44,14 @@ export async function findClassByUserId(id: string): Promise<ClassesData[]>{
 
 export async function findClassByInstructorId(id: string){
     const collection = DB.collection("Classes")
-    const ClassData: Classes[] = await collection.find<Classes>({instructor: new ObjectId(id)}).toArray()
+    const ClassData: Classroom[] = await collection.find<Classroom>({instructor: new ObjectId(id)}).toArray()
     
     return ClassData
 }
 
 export async function isClassExist(name: string): Promise<boolean>{
     const collection = DB.collection("Classes")
-    const ClassData: Classes[] = await collection.find<Classes>({name: name}).toArray()
+    const ClassData: Classroom[] = await collection.find<Classroom>({name: name}).toArray()
 
     return ClassData.length > 0? true : false
 }
@@ -75,12 +75,12 @@ export async function insertClass(class_name: string, is_public: boolean, instru
 export async function findClassById(class_id: string){
     const collection = DB.collection("Classes")
 
-    const class_info: Classes[] = await collection.find<Classes>({_id: new ObjectId(class_id)}).toArray()
+    const class_info: Classroom[] = await collection.find<Classroom>({_id: new ObjectId(class_id)}).toArray()
 
     return class_info[0]
 }
 
-export async function updateClassById(class_id: string, class_object: Classes){
+export async function updateClassById(class_id: string, class_object: Classroom){
     const collection = DB.collection("Classes")
 
     await collection.updateOne({_id: new ObjectId(class_id)}, {$set: {
@@ -98,7 +98,7 @@ export async function deleteClassById(class_id: string){
 export async function getAllowUser(class_id: string){
     const collection = DB.collection("Classes")
 
-    const class_info: Classes = (await collection.aggregate<Classes>([
+    const class_info: Classroom = (await collection.aggregate<Classroom>([
         {
             $match:{
                 _id: new ObjectId(class_id)
@@ -169,7 +169,7 @@ export async function deleteAllowUser(class_id: string, user_id: string){
 export async function getBlockUser(class_id: string){
     const collection = DB.collection("Classes")
 
-    const class_info: Classes = (await collection.aggregate<Classes>([
+    const class_info: Classroom = (await collection.aggregate<Classroom>([
         {
             $match:{
                 _id: new ObjectId(class_id)

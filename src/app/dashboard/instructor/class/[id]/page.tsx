@@ -1,5 +1,5 @@
 "use client"
-import { Classes } from "@/app/api/[[...route]]/types/class"
+import { Classroom } from "@/app/api/[[...route]]/types/class"
 import { Exam } from "@/app/api/[[...route]]/types/exam"
 import { Users } from "@/app/api/[[...route]]/types/user"
 import DeletePrompt from "@/components/deletePrompt"
@@ -21,7 +21,7 @@ export default function AddClass(){
             is_public: false,
             allow_users: [],
             block_users: []
-        } as Classes)
+        } as Classroom)
 
     let [change, setChange] = useState(false)
     let [errorMsg, setErrorMsg] = useState("")
@@ -37,7 +37,7 @@ export default function AddClass(){
         fetch("/api/instructor/class/find/"+id)
             .then((r) => r.json())
             .then((json) => {
-                setClasses(json.data as Classes)
+                setClasses(json.data as Classroom)
             })
     }
 
@@ -142,7 +142,7 @@ export default function AddClass(){
     return (
         <> 
             <Splash isLoad={load}></Splash>
-            <DeletePrompt promptText={"Delete This Class ?"} show={showDelete} setShow={setShowDelete} deleteFunction={deleteClass}>
+            <DeletePrompt promptText={"Delete This Classroom ?"} show={showDelete} setShow={setShowDelete} deleteFunction={deleteClass}>
                 
             </DeletePrompt>
             <Modal show={showExamAdd} setShow={setShowExamAdd} className="bg-white w-[30rem] rounded-md px-5 py-4">

@@ -1,6 +1,6 @@
 import { Users } from "./user"
 
-export type Classes = {
+export type Classroom = {
     _id?: string,
     instructor: string,
     name: string,
@@ -11,7 +11,7 @@ export type Classes = {
     block_users_list?: Users[]
 }
 
-export type ClassesData = {
-    classes: Classes,
+export type ClassroomData = {
+    classes: Classroom,
     is_blocked: boolean
 }
