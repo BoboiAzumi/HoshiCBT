@@ -1,12 +1,13 @@
 "use client"
 import { Answer, Attachment, Questions } from "@/app/api/[[...route]]/types/exam";
 import { Users } from "@/app/api/[[...route]]/types/user";
+import LoadingModal from "@/components/loadingModal";
 import Modal from "@/components/modal";
 import Navbar from "@/components/navbar";
 import Splash from "@/components/splash";
 import { UserData } from "@/context/UserData";
 import { useParams } from "next/navigation";
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ExamEdit(){
     let [userData, setUserData] = useState<Users>()
@@ -19,7 +20,9 @@ export default function ExamEdit(){
     let [modalAttachment, setModalAttachment] = useState(false)
     let [questions, setQuestions] = useState([] as Questions[])
     let [drag, setDrag] = useState(false)
-    let [files, setFiles] = useState({} as File)
+    let [file, setFile] = useState({} as File)
+    let [fileType, setFileType] = useState("")
+    let [uploadLoading, setUploadLoading] = useState(false)
     const { id, exam_id } = useParams()
 
     async function loadExamData(){
@@ -88,6 +91,23 @@ export default function ExamEdit(){
         setSaved(false)
     }
 
+    function uploadFile(){
+        setModalAttachment(false)
+        setUploadLoading(true)
+        const formData = new FormData()
+        formData.append("file", file)
+        formData.append("type", fileType)
+        fetch("/api/uploads", {
+            method: "POST",
+            body: formData
+        }).then((res) => {
+            return res.json()
+        }).then((json) => {
+            console.log(json)
+            setUploadLoading(false)
+        })
+    }
+
     useEffect(() => {
         fetch("/api/auth/")
             .then((r) => r.json())
@@ -121,58 +141,79 @@ export default function ExamEdit(){
     return (
         <>
             <Splash isLoad={load}></Splash>
+            <LoadingModal show={uploadLoading} className="bg-white p-5 w-[50vw] min-h-[40vh] rounded-md flex flex-col justify-center items-center">
+                <img
+                    src={"/img/BannerLogo.svg"}
+                    alt="logo"
+                    className={"w-[10rem] object-contain my-5 animate-bounce"}
+                />
+            </LoadingModal>
             <Modal show={modalAttachment} setShow={setModalAttachment} className="bg-white p-5 w-[70vw] min-h-[40vh] rounded-md">
                 <h4 className="text-gray-600">File Type</h4>
-                <select className="w-full border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md text-gray-600">
+                <select className="w-full border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md text-gray-600"
+                    onChange={(ev) => setFileType(ev.target.value)}>
                     <option value="">Select</option>
                     <option value="Image">Image</option>
                     <option value="Audio">Audio</option>
                 </select>
-                <h4 className="text-gray-600">Url</h4>
-                <input
-                    type="text"
-                    placeholder="https://foo.bar/"
-                    className="w-full border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md"
-                />
-                <h4 className="text-gray-600 text-center my-2">Or</h4>
-                <h4 className="text-gray-600">File Upload</h4>
-                <div className={"bg-slate-200 w-full min-h-[6rem] rounded-md flex flex-col justify-center items-center " + (drag ? "border border-[#ff7854]" : "")} 
-                    onDragOver={(ev) => {
-                        ev.preventDefault()
-                        setDrag(true)
-                    }}
-                    onDragExit={(ev) => {
-                        ev.preventDefault()
-                        setDrag(false)
-                    }}
-                    onDrop={(ev) => {
-                        ev.preventDefault()
-                        setFiles(ev.dataTransfer.files[0])
-                        setDrag(false)
-                    }}>
-                    { drag ? (
-                        <h4 className="text-gray-900">Drag Here</h4>
-                    ) : (
-                        <>
-                            {!(files.name) ? (
-                                <input 
-                                    type="file"
-                                    onChange={(ev) => setFiles(ev.target.files ? ev.target.files[0] : {} as File)}
-                                />
-                            ) : (
-                                <div className="flex items-center">
-                                    <h4 className="text-gray-900 mx-2">{files.name}</h4>
-                                    <button 
-                                        className="border shadow-sm shadow-gray-200 px-5 py-2 mx-2 bg-red-400 hover:bg-red-500 rounded-md text-white"
-                                        onClick={(ev) => setFiles({} as File)}
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            )}
-                        </>
-                    )}
-                </div>
+                {fileType != "" ? (
+                    <>
+                        <h4 className="text-gray-600">Url</h4>
+                        <input
+                            type="text"
+                            placeholder="https://foo.bar/"
+                            className="w-full border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md"
+                        />
+                        <h4 className="text-gray-600 text-center my-2">Or</h4>
+                        <h4 className="text-gray-600">File Upload</h4>
+                        <div className={"bg-slate-200 w-full min-h-[6rem] rounded-md flex flex-col justify-center items-center " + (drag ? "border border-[#ff7854]" : "")} 
+                            onDragOver={(ev) => {
+                                ev.preventDefault()
+                                setDrag(true)
+                            }}
+                            onDragExit={(ev) => {
+                                ev.preventDefault()
+                                setDrag(false)
+                            }}
+                            onDrop={(ev) => {
+                                ev.preventDefault()
+                                setFile(ev.dataTransfer.files[0])
+                                setDrag(false)
+                            }}>
+                        { drag ? (
+                            <h4 className="text-gray-900">Drag Here</h4>
+                        ) : (
+                            <>
+                                {!(file.name) ? (
+                                    <input 
+                                        type="file"
+                                        onChange={(ev) => setFile(ev.target.files ? ev.target.files[0] : {} as File)}
+                                    />
+                                ) : (
+                                    <div className="flex items-center">
+                                        <h4 className="text-gray-900 mx-2">{file.name}</h4>
+                                        <button 
+                                            className="border shadow-sm shadow-gray-200 px-5 py-2 mx-2 bg-red-400 hover:bg-red-500 rounded-md text-white"
+                                            onClick={(ev) => setFile({} as File)}
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                )}
+                            </>
+                        )}
+                        </div>
+                        {(file.name) ? (
+                            <>
+                                <input onClick={(ev) => uploadFile()} type="button" value="Upload" className={"w-full border border-slate-200 bg-[#ff7854] hover:bg-[#ff4c1a] text-gray-100 mt-5 px-3 py-2 focus:outline-[#ff7854] rounded-md cursor-pointer"}/>
+                            </>
+                        ) : (
+                            <></>
+                        )}
+                    </>
+                ) : (
+                    <></>
+                )}
             </Modal>
             <div className={"bg-white w-full min-h-[100vh]"+ (load? " hidden": "")}>
                 <UserData.Provider value={userData as Users}>
