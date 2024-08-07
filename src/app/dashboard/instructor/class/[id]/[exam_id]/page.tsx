@@ -42,34 +42,117 @@ export default function ExamEdit(){
     }
 
     async function addQuestion(){
+        setUploadLoading(true)
         try{
-            const res = await fetch(`/api/instructor/exam/${id}/${exam_id}/question`, {
+            const res = await fetch(`/api/instructor/class/exam/${id}/${exam_id}/question`, {
                 method: "POST",
                 body: JSON.stringify({
                     method: "NEW_QUESTION"
                 })
             })
+            const json = await res.json()
+            if(json.status != "FAIL"){
+                loadExamData()
+            }
+            setUploadLoading(false)
         }
-        catch{
-            alert("error")
+        catch(e: any){
+            alert("error : "+e.message)
         }
     }
 
-    function deleteQuestion(index: number){
-        let quests = [...questions]
-        quests = quests.filter((v, i) => i != index)
-        setQuestions(quests)
-        setSaved(false)
+    async function deleteQuestion(index: number){
+        setUploadLoading(true)
+        try{
+            const res = await fetch(`/api/instructor/class/exam/${id}/${exam_id}/question`, {
+                method: "POST",
+                body: JSON.stringify({
+                    method: "DELETE_QUESTION",
+                    data: {
+                        index
+                    }
+                })
+            })
+            const json = await res.json()
+            if(json.status != "FAIL"){
+                loadExamData()
+            }
+            setUploadLoading(false)
+        }
+        catch(e: any){
+            alert("error : "+e.message)
+        }
     }
 
-    function addAnswer(question_index: number){
-        let qs = [...questions]
-        qs[question_index].list_answer.push({
-            text: "",
-            correct: false
-        })
-        setQuestions(qs)
-        setSaved(false)
+    async function deleteAttachment(index: number, aindex: number){
+        setUploadLoading(true)
+        try{
+            const res = await fetch(`/api/instructor/class/exam/${id}/${exam_id}/question`, {
+                method: "POST",
+                body: JSON.stringify({
+                    method: "DELETE_ATTACHMENT",
+                    data: {
+                        index,
+                        aindex
+                    }
+                })
+            })
+            const json = await res.json()
+            if(json.status != "FAIL"){
+                loadExamData()
+            }
+            setUploadLoading(false)
+        }
+        catch(e: any){
+            alert("error : "+e.message)
+        }
+    }
+
+    async function addAnswer(question_index: number){
+        setUploadLoading(true)
+        try{
+            const res = await fetch(`/api/instructor/class/exam/${id}/${exam_id}/question`, {
+                method: "POST",
+                body: JSON.stringify({
+                    method: "NEW_ANSWER",
+                    data: {
+                        i: question_index
+                    }
+                })
+            })
+            const json = await res.json()
+            if(json.status != "FAIL"){
+                loadExamData()
+            }
+            setUploadLoading(false)
+        }
+        catch(e: any){
+            alert("error : "+e.message)
+        }
+    }
+
+    async function deleteAnswer(question_index: number, answer_index: number){
+        setUploadLoading(true)
+        try{
+            const res = await fetch(`/api/instructor/class/exam/${id}/${exam_id}/question`, {
+                method: "POST",
+                body: JSON.stringify({
+                    method: "DELETE_ANSWER",
+                    data: {
+                        i: question_index,
+                        ai: answer_index
+                    }
+                })
+            })
+            const json = await res.json()
+            if(json.status != "FAIL"){
+                loadExamData()
+            }
+            setUploadLoading(false)
+        }
+        catch(e: any){
+            alert("error : "+e.message)
+        }
     }
 
     function saving(){
@@ -95,6 +178,28 @@ export default function ExamEdit(){
         qs[question_index].list_answer[answer_index].correct = !qs[question_index].list_answer[answer_index].correct
         setQuestions(qs)
         setSaved(false)
+        saving()
+    }
+
+    async function newAttachment(data: object){
+        setUploadLoading(true)
+        try{
+            const res = await fetch(`/api/instructor/class/exam/${id}/${exam_id}/question`, {
+                method: "POST",
+                body: JSON.stringify({
+                    method: "NEW_ATTACHMENT",
+                    data
+                })
+            })
+            const json = await res.json()
+            if(json.status != "FAIL"){
+                loadExamData()
+            }
+            setUploadLoading(false)
+        }
+        catch(e: any){
+            alert("error : "+e.message)
+        }
     }
 
     function uploadFile(){
@@ -110,14 +215,14 @@ export default function ExamEdit(){
             return res.json()
         }).then(async (json) => {
             if(json.status != "FAIL"){
-                let qs = [...questions]
-                qs[selectedQIndex].attachment.push({
+                await newAttachment({
                     type: fileType == "image" ? "image" : "audio",
                     from: "upload",
-                    source: json.path
+                    source: json.path,
+                    i: selectedQIndex
                 })
-                setQuestions(qs)
-                saving()
+
+                await loadExamData()
             }
             setUploadLoading(false)
             setFile({} as File)
@@ -292,7 +397,10 @@ export default function ExamEdit(){
                                         setSelectedAIndex={setSelectedAIndex}
                                         correctToggle={correctToggle}
                                         addAnswer={addAnswer}
+                                        deleteAnswer={deleteAnswer}
                                         deleteQuestion={deleteQuestion}
+                                        saving={saving}
+                                        deleteAttachment={deleteAttachment}
                                     />
                                 ))}
                             <button className="text-center w-full py-2 border border-slate-200 my-2 rounded-md hover:bg-slate-200" onClick={() => addQuestion()}>

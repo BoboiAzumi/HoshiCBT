@@ -11,7 +11,10 @@ type QuestionsParam = {
     setSelectedAIndex: Function,
     correctToggle: Function,
     addAnswer: Function,
-    deleteQuestion: Function
+    deleteQuestion: Function,
+    saving: Function,
+    deleteAttachment: Function
+    deleteAnswer: Function
 }
 
 export default function QuestionsForm(p: QuestionsParam){
@@ -30,6 +33,7 @@ export default function QuestionsForm(p: QuestionsParam){
                     }
                 }
                 className="w-full border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md"
+                onBlur={(ev) => p.saving()}
             />
             <h4 className="my-2">Attachment</h4>
             {p.v.attachment.map((w: Attachment, j: number) => (
@@ -49,7 +53,10 @@ export default function QuestionsForm(p: QuestionsParam){
                         </audio>)}
                     </div>
                     <div className="w-[20%] flex flex-col justify-center items-center">
-                        <button className="border shadow-sm shadow-gray-200 w-full px-5 py-2 bg-red-400 hover:bg-red-500 rounded-md text-white">
+                        <button className="border shadow-sm shadow-gray-200 w-full px-5 py-2 bg-red-400 hover:bg-red-500 rounded-md text-white"
+                        onClick={() => {
+                            p.deleteAttachment(p.i, j)
+                        }}>
                             Delete
                         </button>
                     </div>
@@ -73,6 +80,10 @@ export default function QuestionsForm(p: QuestionsParam){
                                 let qs = [...p.questions]
                                 qs[p.i].list_answer[j].text = ev.target.value
                                 p.setQuestions(qs)
+                                p.setSaved(false)
+                            }}
+                            onBlur={(ev) => {
+                                p.saving()
                             }}
                             className="w-full border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md"
                         />
@@ -91,11 +102,7 @@ export default function QuestionsForm(p: QuestionsParam){
                     <div className="w-[15%] flex flex-col justify-center items-center">
                         <button className="border shadow-sm shadow-gray-200 w-full px-5 py-2 bg-red-400 hover:bg-red-500 rounded-md text-white" 
                             onClick={(ev) => {
-                                let qs = [...p.questions]
-                                let as = qs[p.i].list_answer.filter((_, k: number) => k != j)
-                                qs[p.i].list_answer = as
-                                p.setQuestions(qs)
-                                p.setSaved(false)
+                                p.deleteAnswer(p.i, j)
                             }}>
                             Delete
                         </button>

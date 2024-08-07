@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb"
 import { DB } from "./connection"
 import { Answer, Attachment, Exam, Questions } from "../types/exam";
-import { StringifyOptions } from "querystring";
+import fs, { link } from "fs"
 
 async function is_inactive(class_id: string, exam_id: string){
     const collection = DB.collection("Exam_Session");
@@ -323,11 +323,7 @@ export async function insertNewAttachment(class_id: string, exam_id: string, ind
     const exam = (await collection.find({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}).toArray())[0]
     const { questions } = exam
 
-    questions.push({
-        question: "",
-        attachment: [] as Attachment[],
-        list_answer: [] as Answer[]
-    } as Questions)
+    questions[index].attachment.push(attachment)
 
     await collection.updateOne({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}, {$set:{questions: questions}})
 }
@@ -337,11 +333,60 @@ export async function insertNewAnswer(class_id: string, exam_id: string, index: 
     const exam = (await collection.find({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}).toArray())[0]
     const { questions } = exam
 
-    questions.push({
-        question: "",
-        attachment: [] as Attachment[],
-        list_answer: [] as Answer[]
-    } as Questions)
+    questions[index].list_answer.push({
+        text: "",
+        correct: false
+    })
+
+    await collection.updateOne({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}, {$set:{questions: questions}})
+}
+
+export async function deleteQuestion(class_id: string, exam_id: string, index: number){
+    const collection = DB.collection("Exam")
+    const exam = (await collection.find({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}).toArray())[0]
+    const { questions } = exam
+
+    // Find Attachment
+    if(questions[index].attachment.length != 0){
+        const attachment: Attachment[] = questions[index].attachment
+        attachment.map((v, i) => {
+            if(v.from == "upload"){
+                const linkPath = v.source.replace("/api/", "./")
+                fs.unlinkSync(linkPath)
+            }
+        })
+    }
+
+    const newQuestions = questions.filter((_: Questions, i: number) => i != index)
+
+    await collection.updateOne({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}, {$set:{questions: newQuestions}})
+}
+
+export async function deleteAttachment(class_id: string, exam_id: string, index: number, attachmentIndex: number){
+    const collection = DB.collection("Exam")
+    const exam = (await collection.find({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}).toArray())[0]
+    const { questions } = exam
+
+    const { attachment } = questions[index] as Questions
+
+    const linkPath = attachment[attachmentIndex].source.replace("/api/", "./")
+    fs.unlinkSync(linkPath)
+
+    const newAttachment = attachment.filter((v, i) => i != attachmentIndex);
+    questions[index].attachment = newAttachment
+
+    await collection.updateOne({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}, {$set:{questions: questions}})
+}
+
+export async function deleteAnswer(class_id: string, exam_id: string, index: number, answerIndex: number){
+    const collection = DB.collection("Exam")
+    const exam = (await collection.find({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}).toArray())[0]
+    const { questions } = exam
+
+    const { list_answer } = questions[index] as Questions
+
+    const newListAnswer = list_answer.filter((v, i) => i != answerIndex);
+    questions[index].list_answer = newListAnswer
 
     await collection.updateOne({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}, {$set:{questions: questions}})
 }

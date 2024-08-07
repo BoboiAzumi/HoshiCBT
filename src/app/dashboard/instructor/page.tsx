@@ -58,7 +58,7 @@ export default function UserDashboard() {
                         <div className="border shadow-sm shadow-gray-200 w-[10rem] px-5 py-2">
                             <a href={"/dashboard/instructor/class/add"}> 
                                 <h3 className="text-center text-gray-600 font-semibold">
-                                    Add Class
+                                    Add Classroom
                                 </h3>
                             </a>
                         </div>

@@ -4,7 +4,7 @@ import { JWTVerify, verify } from "../auth/jwtauth"
 import { getCookie } from "hono/cookie"
 import { deleteAllowUser, deleteBlockUser, deleteClassById, findClassById, findClassByInstructorId, getAllowUser, getAllowUserNotIn, getBlockUser, getBlockUserNotIn, insertClass, setAllowUser, setBlockUser, updateClassById } from "../db/class"
 import { Classroom } from "../types/class"
-import { deleteExamByClasId, getExam, getExamList, insertNewAnswer, insertNewAttachment, insertNewQuestion, newExam, saveExam } from "../db/exam"
+import { deleteAnswer, deleteAttachment, deleteExamByClasId, deleteQuestion, getExam, getExamList, insertNewAnswer, insertNewAttachment, insertNewQuestion, newExam, saveExam } from "../db/exam"
 import { Questions } from "../types/exam"
 import { upload } from "../upload"
 
@@ -349,13 +349,27 @@ Instructor.post("class/exam/:class_id/:exam_id/question", async (c: Context) => 
         const { method, data } : { method: string, data: any} = await c.req.json()
 
         if(method.toUpperCase() == "NEW_QUESTION"){
-            insertNewQuestion(class_id, exam_id)
+            await insertNewQuestion(class_id, exam_id)
         }
         else if(method.toUpperCase() == "NEW_ATTACHMENT"){
-            insertNewAttachment(class_id, exam_id, data.i, {type: data.type, from: data.from, source: data.source})
+            await insertNewAttachment(class_id, exam_id, data.i, {type: data.type, from: data.from, source: data.source})
         }
         else if(method.toUpperCase() == "NEW_ANSWER"){
-            insertNewAnswer(class_id, exam_id, data.i)
+            await insertNewAnswer(class_id, exam_id, data.i)
+        }
+        else if(method.toUpperCase() == "DELETE_QUESTION"){
+            await deleteQuestion(class_id, exam_id, data.index)
+        }
+        else if(method.toUpperCase() == "DELETE_ATTACHMENT"){
+            await deleteAttachment(class_id, exam_id, data.index, data.aindex)
+        }
+        else if(method.toUpperCase() == "DELETE_ANSWER"){
+            await deleteAnswer(class_id, exam_id, data.i, data.ai)
+        }
+        else{
+            return c.json({
+                status: "FAIL"
+            })
         }
 
         return c.json({
