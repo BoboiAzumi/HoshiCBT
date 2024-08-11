@@ -39,7 +39,18 @@ export default function AdminEditorPage(){
                 <div className="w-full z-0">
                     <div className="flex flex-col items-center">
                         <h2 className="mt-[7.5rem] mb-5 text-2xl font-semibold text-gray-600">Admin List</h2>
-                        
+                        <div className="w-[50rem]">
+                        <table className="my-5 rounded-md w-full border border-collapse">
+                                <thead>
+                                    <tr>
+                                        <th className="text-gray-600 border py-2 px-2">Username</th>
+                                        <th className="text-gray-600 border py-2 px-2">Fullname</th>
+                                        <th className="text-gray-600 border py-2 px-2">Email</th>
+                                        <th className="text-gray-600 border py-2 px-2">Action</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

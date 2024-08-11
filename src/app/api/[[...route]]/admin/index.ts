@@ -2,10 +2,6 @@ import { Context, Hono } from "hono"
 import { authentication } from "../auth/middleware"
 import { JWTVerify, verify } from "../auth/jwtauth"
 import { getCookie } from "hono/cookie"
-import { deleteAllowUser, deleteBlockUser, deleteClassById, findClassById, findClassByInstructorId, getAllowUser, getAllowUserNotIn, getBlockUser, getBlockUserNotIn, insertClass, setAllowUser, setBlockUser, updateClassById } from "../db/class"
-import { Classroom } from "../types/class"
-import { deleteAnswer, deleteAttachment, deleteExamByClasId, deleteQuestion, getExam, getExamList, insertNewAnswer, insertNewAttachment, insertNewQuestion, newExam, saveExam } from "../db/exam"
-import { Questions } from "../types/exam"
 import { upload } from "../upload"
 
 export const Admin = new Hono()
@@ -35,3 +31,14 @@ Admin.use(async (c: Context, next: Function) => {
 })
 
 Admin.post("/uploads", upload)
+
+Admin.post("/", async (c: Context) => {
+    try{
+        
+    }
+    catch{
+        return c.json({
+            status: "FAIL"
+        })
+    }
+})
