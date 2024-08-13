@@ -34,7 +34,30 @@ Admin.post("/uploads", upload)
 
 Admin.post("/", async (c: Context) => {
     try{
-        
+        const { method } = await c.req.json()
+
+        if(!(method instanceof String)) return c.json({
+            status: "FAIL"
+        })
+
+        switch(method.toUpperCase()){
+            case "ADD_ADMIN":
+                break
+            case "ADD_INSTRUCTOR":
+                break
+            case "ADD_USER":
+                break
+            case "DELETE_ADMIN":
+                break
+            case "DELETE_INSTRUCTOR":
+                break
+            case "DELETE_USER":
+                break
+            default:
+                return c.json({
+                    status: "FAIL"
+                })
+        }
     }
     catch{
         return c.json({
