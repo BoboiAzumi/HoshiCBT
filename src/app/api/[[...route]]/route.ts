@@ -4,10 +4,10 @@ import { auth } from "./auth"
 import { Instructor } from "./instructor"
 import { User } from "./user"
 import dotenv from "dotenv-extended"
-import { upload } from "./upload"
 import { stream } from "hono/streaming"
 import fs from "fs"
 import path from "path"
+import { Admin } from "./admin"
 
 dotenv.load()
 
@@ -16,6 +16,7 @@ const app: Hono = new Hono().basePath("/api")
 app.route("/auth", auth)
 app.route("/instructor", Instructor)
 app.route("/user", User)
+app.route("/admin", Admin)
 
 //app.post("/uploads", upload)
 

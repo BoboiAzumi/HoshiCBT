@@ -3,6 +3,8 @@ import { authentication } from "../auth/middleware"
 import { JWTVerify, verify } from "../auth/jwtauth"
 import { getCookie } from "hono/cookie"
 import { upload } from "../upload"
+import { addUser, findAdmin, findInstructor, findUser } from "../db/users"
+import { Users } from "../types/user"
 
 export const Admin = new Hono()
 
@@ -34,34 +36,77 @@ Admin.post("/uploads", upload)
 
 Admin.post("/", async (c: Context) => {
     try{
-        const { method } = await c.req.json()
+        const { method, data } = await c.req.json()
 
-        if(!(method instanceof String)) return c.json({
+        if(!(typeof method == "string")) return c.json({
             status: "FAIL"
         })
 
+        let ftc : Users[];
+
         switch(method.toUpperCase()){
             case "ADD_ADMIN":
-                break
+                await addUser({
+                    ...data,
+                    role: "admin"
+                })
+
+                return c.json({
+                    status: "OK"
+                })
             case "ADD_INSTRUCTOR":
-                break
+                await addUser({
+                    ...data,
+                    role: "instructor"
+                })
+
+                return c.json({
+                    status: "OK"
+                })
             case "ADD_USER":
-                break
+                await addUser({
+                    ...data,
+                    role: "user"
+                })
+
+                return c.json({
+                    status: "OK"
+                })
             case "DELETE_ADMIN":
                 break
             case "DELETE_INSTRUCTOR":
                 break
             case "DELETE_USER":
+
                 break
+            case "GET_ADMIN":
+                ftc = await findAdmin(data ? data.q ? data.q : "" : "")
+                return c.json({
+                    status: "OK",
+                    data: ftc
+                })
+            case "GET_INSTRUCTOR":
+                ftc = await findInstructor(data ? data.q ? data.q : "" : "")
+                return c.json({
+                    status: "OK",
+                    data: ftc
+                })
+            case "GET_USER":
+                ftc = await findUser(data ? data.q ? data.q : "" : "")
+                return c.json({
+                    status: "OK",
+                    data: ftc
+                })
             default:
                 return c.json({
                     status: "FAIL"
                 })
         }
     }
-    catch{
+    catch(e: any){
         return c.json({
-            status: "FAIL"
+            status: "FAIL",
+            message: e.message
         })
     }
 })
