@@ -72,7 +72,13 @@ export async function deleteUser(id: string){
 
 export async function updateUser(data: Users){
     try{
-        await DB.collection("Users").updateOne({_id: new ObjectId(data._id)}, { $set: {data}})
+        const payload = {
+            username: data.username,
+            password: data.password,
+            role: data.role,
+            information: data.information
+        }
+        await DB.collection("Users").updateOne({_id: new ObjectId(data._id)}, { $set: {...payload}})
     }
     catch(e){
         throw e

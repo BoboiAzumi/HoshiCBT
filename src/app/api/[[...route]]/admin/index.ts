@@ -3,7 +3,7 @@ import { authentication } from "../auth/middleware"
 import { JWTVerify, verify } from "../auth/jwtauth"
 import { getCookie } from "hono/cookie"
 import { upload } from "../upload"
-import { addUser, findAdmin, findInstructor, findUser } from "../db/users"
+import { addUser, deleteUser, findAdmin, findInstructor, findUser, updateUser } from "../db/users"
 import { Users } from "../types/user"
 
 export const Admin = new Hono()
@@ -72,13 +72,23 @@ Admin.post("/", async (c: Context) => {
                 return c.json({
                     status: "OK"
                 })
-            case "DELETE_ADMIN":
-                break
-            case "DELETE_INSTRUCTOR":
-                break
-            case "DELETE_USER":
+            case "DELETE":
+                await deleteUser(data ? data.id ? data.id : "0" : "0")
 
-                break
+                return c.json({
+                    status: "OK"
+                })
+            
+            case "MODIFY":
+                if(data == undefined || data._id == undefined) return c.json({
+                    status: "FAIL"
+                })
+
+                await updateUser(data ? data : {} as Users)
+                
+                return c.json({
+                    status: "OK"
+                })
             case "GET_ADMIN":
                 ftc = await findAdmin(data ? data.q ? data.q : "" : "")
                 return c.json({
