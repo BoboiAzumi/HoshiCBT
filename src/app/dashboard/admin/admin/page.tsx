@@ -36,7 +36,7 @@ export default function AdminEditorPage(){
             })
     }, [])
 
-    useEffect(() => {
+    function loadDataList(){
         fetch("/api/admin/", {
             method: "post",
             body: JSON.stringify({
@@ -46,7 +46,28 @@ export default function AdminEditorPage(){
         .then((json) => {
             if(json.status != "FAIL") setDataList(json.data);
         })
+    }
+
+    useEffect(() => {
+        loadDataList()
     }, [load])
+
+    async function change(){
+        setProcess(true)
+        const res = await fetch("/api/admin/", {
+            method: "POST",
+            body: JSON.stringify({
+                method: "MODIFY",
+                data: dataList[indexData]
+            })
+        })
+        const json = await res.json()
+        if(json.status != "FAIL"){
+            setProcess(false)
+            loadDataList()
+            setModalDetail(false)
+        }
+    }
 
     return (
         <>
@@ -118,7 +139,14 @@ export default function AdminEditorPage(){
                     />
                     {changed ? (
                         <>
-                            <input type="submit" value="Change" className={"border border-slate-200 bg-[#ff7854] hover:bg-[#ff4c1a] text-gray-100 mt-5 px-3 py-2 focus:outline-[#ff7854] rounded-md cursor-pointer" + (process? " hidden" : "")}/>
+                            <input 
+                                type="submit" 
+                                value="Change" 
+                                className={"border border-slate-200 bg-[#ff7854] hover:bg-[#ff4c1a] text-gray-100 mt-5 px-3 py-2 focus:outline-[#ff7854] rounded-md cursor-pointer" + (process? " hidden" : "")}
+                                onClick={() => {
+                                    change()
+                                }}
+                            />
                             <button className={"flex justify-center border border-slate-200 bg-[#ff4c1a] text-gray-100 focus:outline-[#ff7854] rounded-md cursor-pointer mt-5" + (process? "" : " hidden")} disabled>
                             <img
                                 src={"/img/load.svg"}
@@ -135,6 +163,8 @@ export default function AdminEditorPage(){
                     )}
                 </div>
             </Modal>
+
+            
             <div className={"bg-white w-full min-h-[100vh]"+ (load? " hidden": "")}>
                 <UserData.Provider value={userData as Users}>
                     <Navbar/>
