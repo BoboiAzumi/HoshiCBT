@@ -228,7 +228,7 @@ export default function AdminEditorPage(){
             <Modal className="bg-white px-5 py-2 rounded-md w-[40rem]" show={modalNewInstructor} setShow={setModalNewInstructor}>
                 <div className="flex flex-col">
                     <div className="flex w-full justify-center">
-                        <h3 className="my-2 font-bold text-xl text-gray-700">New Admin</h3>
+                        <h3 className="my-2 font-bold text-xl text-gray-700">New Instructor</h3>
                     </div>
                     <h6 className="text-gray-700">Username</h6>
                     <input 
@@ -324,7 +324,7 @@ export default function AdminEditorPage(){
                 </UserData.Provider>
                 <div className="w-full z-0">
                     <div className="flex flex-col items-center">
-                        <h2 className="mt-[7.5rem] mb-5 text-2xl font-semibold text-gray-600">Admin List</h2>
+                        <h2 className="mt-[7.5rem] mb-5 text-2xl font-semibold text-gray-600">Instructor List</h2>
                         <div className="w-[50rem]">
                         <button 
                             className="border shadow-sm shadow-gray-200 w-[10rem] px-5 py-2 text-gray-600"

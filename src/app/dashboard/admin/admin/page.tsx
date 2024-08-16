@@ -4,7 +4,7 @@ import Modal from "@/components/modal";
 import Navbar from "@/components/navbar";
 import Splash from "@/components/splash";
 import { UserData } from "@/context/UserData";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import crypto from "crypto"
 
 export default function AdminEditorPage(){
@@ -27,6 +27,8 @@ export default function AdminEditorPage(){
         }
     } as Users)
     let [modalNewAdmin, setModalNewAdmin] = useState(false)
+
+    const ps = useRef({} as HTMLInputElement)
 
     useEffect(() => {
         fetch("/api/auth/")
@@ -105,6 +107,7 @@ export default function AdminEditorPage(){
                     avatar: ""
                 }
             })
+            ps.current.value = ""
             setModalNewAdmin(false)
         }
     }
@@ -243,6 +246,7 @@ export default function AdminEditorPage(){
                     <input 
                         placeholder="Change Password" 
                         type="text" 
+                        ref={ps}
                         className="border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md"
                         onChange={(ev) => {
                             setChanged(true)

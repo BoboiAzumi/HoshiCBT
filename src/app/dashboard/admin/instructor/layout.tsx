@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Admin Editor"
+    title: "Instructor Editor"
 }
 
 export default function RootLayout({ children } : { children: React.ReactNode}){
