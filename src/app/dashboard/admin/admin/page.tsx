@@ -15,6 +15,18 @@ export default function AdminEditorPage(){
     let [indexData, setIndexData] = useState(0)
     let [process, setProcess] = useState(false)
     let [changed, setChanged] = useState(false)
+    let [newAdmin, setNewAdmin] = useState({
+        username: "",
+        password: "",
+        role: "admin",
+        information: {
+            fullname: "",
+            email: "",
+            phone: "",
+            avatar: ""
+        }
+    } as Users)
+    let [modalNewAdmin, setModalNewAdmin] = useState(false)
 
     useEffect(() => {
         fetch("/api/auth/")
@@ -66,6 +78,52 @@ export default function AdminEditorPage(){
             setProcess(false)
             loadDataList()
             setModalDetail(false)
+        }
+    }
+
+    async function save(){
+        setProcess(true)
+        const res = await fetch("/api/admin/", {
+            method: "POST",
+            body: JSON.stringify({
+                method: "ADD_ADMIN",
+                data: newAdmin
+            })
+        })
+        const json = await res.json()
+        if(json.status != "FAIL"){
+            setProcess(false)
+            loadDataList()
+            setNewAdmin({
+                username: "",
+                password: "",
+                role: "admin",
+                information: {
+                    fullname: "",
+                    email: "",
+                    phone: "",
+                    avatar: ""
+                }
+            })
+            setModalNewAdmin(false)
+        }
+    }
+
+    async function remove(id: string){
+        setLoad(true)
+        const res = await fetch("/api/admin/", {
+            method: "POST",
+            body: JSON.stringify({
+                method: "DELETE",
+                data: {
+                    id
+                }
+            })
+        })
+        const json = await res.json()
+        if(json.status != "FAIL"){
+            setLoad(false)
+            loadDataList()
         }
     }
 
@@ -163,8 +221,99 @@ export default function AdminEditorPage(){
                     )}
                 </div>
             </Modal>
-
             
+            <Modal className="bg-white px-5 py-2 rounded-md w-[40rem]" show={modalNewAdmin} setShow={setModalNewAdmin}>
+                <div className="flex flex-col">
+                    <div className="flex w-full justify-center">
+                        <h3 className="my-2 font-bold text-xl text-gray-700">New Admin</h3>
+                    </div>
+                    <h6 className="text-gray-700">Username</h6>
+                    <input 
+                        type="text" 
+                        className="border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md" 
+                        value={newAdmin.username} 
+                        onChange={(ev) => {
+                            setChanged(true)
+                            const newAdminObject = {...newAdmin}
+                            newAdminObject.username = ev.target.value
+                            setNewAdmin(newAdminObject)
+                        }}
+                    />
+                    <h6 className="text-gray-700">Password</h6>
+                    <input 
+                        placeholder="Change Password" 
+                        type="text" 
+                        className="border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md"
+                        onChange={(ev) => {
+                            setChanged(true)
+                            const newAdminObject = {...newAdmin}
+                            newAdminObject.password = crypto.createHash("sha256").update(ev.target.value).digest("hex")
+                            setNewAdmin(newAdminObject)
+                        }}
+                    />
+                    <h6 className="text-gray-700">Fullname</h6>
+                    <input 
+                        type="text" 
+                        className="border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md" 
+                        value={newAdmin.information.fullname} 
+                        onChange={(ev) => {
+                            setChanged(true)
+                            const newAdminObject = {...newAdmin}
+                            newAdminObject.information.fullname = ev.target.value
+                            setNewAdmin(newAdminObject)
+                        }}
+                    />
+                    <h6 className="text-gray-700">Email</h6>
+                    <input 
+                        type="email" 
+                        className="border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md" 
+                        value={newAdmin.information.email} 
+                        onChange={(ev) => {
+                            setChanged(true)
+                            const newAdminObject = {...newAdmin}
+                            newAdminObject.information.email = ev.target.value
+                            setNewAdmin(newAdminObject)
+                        }}
+                    />
+                    <h6 className="text-gray-700">Phone</h6>
+                    <input 
+                        type="text" 
+                        className="border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md" 
+                        value={newAdmin.information.phone} 
+                        onChange={(ev) => {
+                            setChanged(true)
+                            const newAdminObject = {...newAdmin}
+                            newAdminObject.information.phone = ev.target.value
+                            setNewAdmin(newAdminObject)
+                        }}
+                    />
+                    {changed ? (
+                        <>
+                            <input 
+                                type="submit" 
+                                value="Save" 
+                                className={"border border-slate-200 bg-[#ff7854] hover:bg-[#ff4c1a] text-gray-100 mt-5 px-3 py-2 focus:outline-[#ff7854] rounded-md cursor-pointer" + (process? " hidden" : "")}
+                                onClick={() => {
+                                    save()
+                                }}
+                            />
+                            <button className={"flex justify-center border border-slate-200 bg-[#ff4c1a] text-gray-100 focus:outline-[#ff7854] rounded-md cursor-pointer mt-5" + (process? "" : " hidden")} disabled>
+                            <img
+                                src={"/img/load.svg"}
+                                alt="logo"
+                                className="w-[1.5rem] object-contain my-2"
+                            />
+                            </button>
+                        </>
+                    ) : (
+                        <button className="border border-slate-200 bg-[#ff7854] hover:bg-[#ff4c1a] text-gray-100 mt-5 px-3 py-2 focus:outline-[#ff7854] rounded-md cursor-pointer"
+                        onClick={() => setModalNewAdmin(false)}>
+                            Close
+                        </button>
+                    )}
+                </div>
+            </Modal>
+
             <div className={"bg-white w-full min-h-[100vh]"+ (load? " hidden": "")}>
                 <UserData.Provider value={userData as Users}>
                     <Navbar/>
@@ -173,6 +322,11 @@ export default function AdminEditorPage(){
                     <div className="flex flex-col items-center">
                         <h2 className="mt-[7.5rem] mb-5 text-2xl font-semibold text-gray-600">Admin List</h2>
                         <div className="w-[50rem]">
+                        <button 
+                            className="border shadow-sm shadow-gray-200 w-[10rem] px-5 py-2 text-gray-600"
+                            onClick={() => setModalNewAdmin(!modalNewAdmin)}>
+                            Add
+                        </button>
                         <table className="my-5 rounded-md w-full border border-collapse">
                                 <thead>
                                     <tr>
@@ -196,7 +350,11 @@ export default function AdminEditorPage(){
                                                 }}>
                                                     Detail
                                                 </button>
-                                                <button className="border border-slate-200 bg-red-500 text-gray-100 focus:outline-[#ff7854] rounded-sm px-2 py-1 cursor-pointer">
+                                                <button 
+                                                    className="border border-slate-200 bg-red-500 text-gray-100 focus:outline-[#ff7854] rounded-sm px-2 py-1 cursor-pointer"
+                                                    onClick={() => {
+                                                        remove(v._id as string)
+                                                    }}>
                                                     Delete
                                                 </button>
                                             </td>
