@@ -10,7 +10,7 @@ export default function DashboardSpinner(){
         .then((json) => {
             document.location.href = "/signin"
         })
-    })
+    }, [])
 
     return (
         <Splash isLoad={true}></Splash>

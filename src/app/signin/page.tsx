@@ -20,7 +20,7 @@ export default function Login(){
                 setTimeout(() => setLoad(false), 1000)
             }
         })
-    })
+    }, [])
 
     function submit(ev: FormEvent){
         ev.preventDefault()
