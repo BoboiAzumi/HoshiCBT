@@ -62,6 +62,7 @@ User.get("class/:class_id/:exam_id", async (c: Context) => {
     const exam = await examSession(c.req.param("class_id"), c.req.param("exam_id"), cookie.result._id)
 
     if(exam == false){
+        console.log(cookie.result._id)
         return c.json({
             status: "FAIL"
         })

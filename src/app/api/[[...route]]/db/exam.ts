@@ -2,13 +2,15 @@ import { ObjectId } from "mongodb"
 import { DB } from "./connection"
 import { Answer, Attachment, Exam, Questions } from "../types/exam";
 import fs, { link } from "fs"
+import { Users } from "../types/user";
 
-async function is_inactive(class_id: string, exam_id: string){
+async function is_inactive(class_id: string, exam_id: string, user_id: string){
     const collection = DB.collection("Exam_Session");
 
     let exam: Exam[] = await collection.find<Exam>({
         exam_id: new ObjectId(exam_id),
-        class_id: new ObjectId(class_id)
+        class_id: new ObjectId(class_id),
+        user_id: new ObjectId(user_id)
     }).toArray();
 
     if(exam[0].active){
@@ -19,12 +21,13 @@ async function is_inactive(class_id: string, exam_id: string){
     }
 }
 
-async function is_due(class_id: string, exam_id: string){
+async function is_due(class_id: string, exam_id: string, user_id: string){
     const collection = DB.collection("Exam_Session");
 
     let exam: Exam[] = await collection.find<Exam>({
         exam_id: new ObjectId(exam_id),
-        class_id: new ObjectId(class_id)
+        class_id: new ObjectId(class_id),
+        user_id: new ObjectId(user_id)
     }).toArray();
 
     if(Date.now() > (exam[0].due? exam[0].due : 0)){
@@ -123,10 +126,10 @@ export async function createExamSession(class_id: string, exam_id: string, user_
 export async function examSession(class_id: string, exam_id: string, user_id: string): Promise<Exam | boolean>{
     await createExamSession(class_id, exam_id, user_id)
 
-    if(await is_inactive(class_id, exam_id)){
+    if(await is_inactive(class_id, exam_id, user_id)){
         return false;
     }
-    if(await is_due(class_id, exam_id)){
+    if(await is_due(class_id, exam_id, user_id)){
         return false;
     }
 
@@ -137,7 +140,8 @@ export async function examSession(class_id: string, exam_id: string, user_id: st
 
     const exam: Exam[] = await collection.find<Exam>({
         exam_id: new ObjectId(exam_id),
-        class_id: new ObjectId(class_id)
+        class_id: new ObjectId(class_id),
+        user_id: new ObjectId(user_id)
     }, {
         projection
     }).toArray();
@@ -146,10 +150,10 @@ export async function examSession(class_id: string, exam_id: string, user_id: st
 }
 
 export async function answerQuestion(class_id: string, exam_id: string, user_id: string, questionIndex: number, answer: number | undefined | null): Promise<boolean>{
-    if(await is_inactive(class_id, exam_id)){
+    if(await is_inactive(class_id, exam_id, user_id)){
         return false;
     }
-    if(await is_due(class_id, exam_id)){
+    if(await is_due(class_id, exam_id, user_id)){
         return false;
     }
     
@@ -176,7 +180,8 @@ export async function answerQuestion(class_id: string, exam_id: string, user_id:
 
     await collection.updateOne({
         exam_id: new ObjectId(exam_id),
-        class_id: new ObjectId(class_id)
+        class_id: new ObjectId(class_id),
+        user_id: new ObjectId(user_id)
     }, { $set : {
         ...exam[0]
     }})
@@ -185,10 +190,10 @@ export async function answerQuestion(class_id: string, exam_id: string, user_id:
 }
 
 export async function getQuestionByArrayIndex(class_id: string, exam_id: string, user_id: string, questionArrayIndex: number): Promise<Questions | undefined | boolean>{
-    if(await is_inactive(class_id, exam_id)){
+    if(await is_inactive(class_id, exam_id, user_id)){
         return false;
     }
-    if(await is_due(class_id, exam_id)){
+    if(await is_due(class_id, exam_id, user_id)){
         return false;
     }
     
@@ -409,4 +414,47 @@ export async function deleteExam(class_id: string, exam_id: string){
     })
 
     await collection.deleteOne({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)})
+}
+
+export async function getAllSessionResult(class_id: string, exam_id: string){
+    const collection = DB.collection("Exam_Session")
+    const sessions: Exam[] = await collection.find({
+        class_id: new ObjectId(class_id),
+        exam_id: new ObjectId(exam_id)
+    }).toArray() as unknown as Exam[]
+
+    const childPron = (session: Exam) => {
+        return new Promise((resolve: Function, reject: Function) => {
+            const UserCollection = DB.collection("Users")
+            UserCollection.find({_id: new ObjectId(session.user_id)}).toArray().then(async (users) => {
+                try{
+                    const user = (users[0] as unknown) as Users
+                    const resultTest = await getResultTest(session.class_id, <string>session.exam_id, <string>session.user_id)
+                    const payload = {
+                        user,
+                        detail: resultTest
+                    }
+                    resolve(payload)
+                }
+                catch(e){
+                    reject(e)
+                }
+            })
+        })
+    }
+
+    const promiseList: Promise<any>[] = []
+
+    sessions.map((v: Exam, i: number) => {
+        promiseList.push(childPron(v))
+    })
+
+    const result = await Promise.all(promiseList)
+
+    return result
+}
+
+export async function resetSession(class_id: string, exam_id: string){
+    const collection = DB.collection("Exam_Session")
+    await collection.deleteMany({ class_id: new ObjectId(class_id), exam_id: new ObjectId(exam_id) })
 }

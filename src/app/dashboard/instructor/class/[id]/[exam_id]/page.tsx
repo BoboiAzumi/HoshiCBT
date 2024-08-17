@@ -6,6 +6,7 @@ import LoadingModal from "@/components/loadingModal";
 import Modal from "@/components/modal";
 import Navbar from "@/components/navbar";
 import QuestionsForm from "@/components/questionsForm";
+import { SessionList } from "@/components/sessionList";
 import Splash from "@/components/splash";
 import { UserData } from "@/context/UserData";
 import { useParams } from "next/navigation";
@@ -28,6 +29,9 @@ export default function ExamEdit(){
     let [selectedQIndex, setSelectedQIndex] = useState(0)
     let [selectedAIndex, setSelectedAIndex] = useState(0)
     let [showDelete, setShowDelete] = useState(false)
+    let [showDeleteSession, setShowDeleteSession] = useState(false)
+    let [showSession, setShowSession] = useState(false)
+    let [examSession, setExamSession] = useState([] as any)
     const { id, exam_id } = useParams()
 
     async function loadExamData(){
@@ -275,10 +279,31 @@ export default function ExamEdit(){
         return
     }, [duration])
 
+    async function resetSession() {
+        setShowDeleteSession(false)
+        setLoad(true)
+        const res = await fetch(`/api/instructor/class/exam/${id}/${exam_id}/question/reset`)
+        const json = await res.json()
+
+        if(json.status != "FAIL"){
+            setLoad(false)
+        }
+    }
+
+    async function showModalSession() {
+        setShowSession(true)
+        const res = await fetch(`/api/instructor/class/exam/${id}/${exam_id}/question/result`)
+        const json = await res.json()
+        if(json.status != "FAIL") {
+            setExamSession(json.data)
+        }
+    }
+
     return (
         <>
             <Splash isLoad={load}></Splash>
             <DeletePrompt promptText={"Delete This Exam ?"} show={showDelete} setShow={setShowDelete} deleteFunction={deleteExam}/>
+            <DeletePrompt promptText={"Reset This Exam Session ?"} show={showDeleteSession} setShow={setShowDeleteSession} deleteFunction={resetSession}/>
             <LoadingModal show={uploadLoading} className="bg-white p-5 w-[50vw] min-h-[40vh] rounded-md flex flex-col justify-center items-center">
                 <img
                     src={"/img/BannerLogo.svg"}
@@ -286,7 +311,7 @@ export default function ExamEdit(){
                     className={"w-[10rem] object-contain my-5 animate-bounce"}
                 />
             </LoadingModal>
-
+            <SessionList show={showSession} setShow={setShowSession} examSession={examSession}/>
             <Modal show={modalAttachment} setShow={setModalAttachment} className="bg-white p-5 w-[70vw] min-h-[40vh] rounded-md">
                 <h4 className="text-gray-600">File Type</h4>
                 <select className="w-full border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md text-gray-600"
@@ -389,7 +414,17 @@ export default function ExamEdit(){
                                     className="w-full border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md"
                                 />
                                 <h4 className="my-2">Security</h4>
-                                <button className="border shadow-sm shadow-gray-200 w-[10rem] px-5 py-2" onClick={(ev) => setShowDelete(true)}>
+                                <button className="border shadow-sm shadow-gray-200 w-[10rem] px-5 py-2 mx-1" onClick={(ev) => showModalSession()}>
+                                    <h3 className="text-center text-gray-600 font-semibold">
+                                        Show Session
+                                    </h3>
+                                </button>
+                                <button className="border shadow-sm shadow-gray-200 w-[10rem] px-5 py-2 mx-1" onClick={(ev) => setShowDeleteSession(true)}>
+                                    <h3 className="text-center text-gray-600 font-semibold">
+                                        Reset Session
+                                    </h3>
+                                </button>
+                                <button className="border shadow-sm shadow-gray-200 w-[10rem] px-5 py-2 mx-1" onClick={(ev) => setShowDelete(true)}>
                                     <h3 className="text-center text-gray-600 font-semibold">
                                         Delete Exam
                                     </h3>

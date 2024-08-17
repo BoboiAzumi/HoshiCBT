@@ -23,6 +23,7 @@ export type Exam = {
     class_id: string,
     exam_name: string,
     user_id?: string,
+    exam_id?: string,
     duration?: number,
     due?: number,
     active?: boolean,
