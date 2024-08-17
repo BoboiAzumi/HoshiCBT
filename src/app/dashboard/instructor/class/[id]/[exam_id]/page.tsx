@@ -1,6 +1,7 @@
 "use client"
 import { Answer, Attachment, Questions } from "@/app/api/[[...route]]/types/exam";
 import { Users } from "@/app/api/[[...route]]/types/user";
+import DeletePrompt from "@/components/deletePrompt";
 import LoadingModal from "@/components/loadingModal";
 import Modal from "@/components/modal";
 import Navbar from "@/components/navbar";
@@ -26,6 +27,7 @@ export default function ExamEdit(){
     let [uploadLoading, setUploadLoading] = useState(false)
     let [selectedQIndex, setSelectedQIndex] = useState(0)
     let [selectedAIndex, setSelectedAIndex] = useState(0)
+    let [showDelete, setShowDelete] = useState(false)
     const { id, exam_id } = useParams()
 
     async function loadExamData(){
@@ -39,6 +41,19 @@ export default function ExamEdit(){
         setDuration(format)
         setQuestions(json.data.questions)
         setExamName(json.data.exam_name)
+    }
+
+    async function deleteExam(){
+        setShowDelete(false)
+        setLoad(true)
+        
+        let res = await fetch(`/api/instructor/class/exam/${id}/${exam_id}`, {
+            method: "DELETE"
+        })
+        let json = await res.json()
+        if(json.status != "FAIL"){
+            document.location.href = `/dashboard/instructor/class/${id}`;
+        }
     }
 
     async function addQuestion(){
@@ -263,6 +278,7 @@ export default function ExamEdit(){
     return (
         <>
             <Splash isLoad={load}></Splash>
+            <DeletePrompt promptText={"Delete This Exam ?"} show={showDelete} setShow={setShowDelete} deleteFunction={deleteExam}/>
             <LoadingModal show={uploadLoading} className="bg-white p-5 w-[50vw] min-h-[40vh] rounded-md flex flex-col justify-center items-center">
                 <img
                     src={"/img/BannerLogo.svg"}
@@ -372,6 +388,12 @@ export default function ExamEdit(){
                                     }}
                                     className="w-full border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md"
                                 />
+                                <h4 className="my-2">Security</h4>
+                                <button className="border shadow-sm shadow-gray-200 w-[10rem] px-5 py-2" onClick={(ev) => setShowDelete(true)}>
+                                    <h3 className="text-center text-gray-600 font-semibold">
+                                        Delete Exam
+                                    </h3>
+                                </button>
                                 {!saved? (
                                     <>
                                         <input onClick={(ev) => saving()} type="button" value="Save" className={"w-full border border-slate-200 bg-[#ff7854] hover:bg-[#ff4c1a] text-gray-100 mt-5 px-3 py-2 focus:outline-[#ff7854] rounded-md cursor-pointer" + (process? " hidden" : "")}/>

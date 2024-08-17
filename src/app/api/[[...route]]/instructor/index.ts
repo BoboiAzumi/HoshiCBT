@@ -4,7 +4,7 @@ import { JWTVerify, verify } from "../auth/jwtauth"
 import { getCookie } from "hono/cookie"
 import { deleteAllowUser, deleteBlockUser, deleteClassById, findClassById, findClassByInstructorId, getAllowUser, getAllowUserNotIn, getBlockUser, getBlockUserNotIn, insertClass, setAllowUser, setBlockUser, updateClassById } from "../db/class"
 import { Classroom } from "../types/class"
-import { deleteAnswer, deleteAttachment, deleteExamByClasId, deleteQuestion, getExam, getExamList, insertNewAnswer, insertNewAttachment, insertNewQuestion, newExam, saveExam } from "../db/exam"
+import { deleteAnswer, deleteAttachment, deleteExam, deleteExamByClasId, deleteQuestion, getExam, getExamList, insertNewAnswer, insertNewAttachment, insertNewQuestion, newExam, saveExam } from "../db/exam"
 import { Questions } from "../types/exam"
 import { upload } from "../upload"
 
@@ -331,6 +331,23 @@ Instructor.post("class/exam/:class_id/:exam_id", async (c: Context) => {
         const { exam_name, duration, questions } = await c.req.json()
 
         await saveExam(class_id, exam_id, exam_name, duration, questions as Questions)
+
+        return c.json({
+            status: "OK"
+        })
+    }
+    catch(err){
+        return c.json({
+            status: "FAIL",
+        })
+    }
+})
+
+Instructor.delete("class/exam/:class_id/:exam_id", async (c: Context) => {
+    try{
+        const { class_id, exam_id } = c.req.param()
+
+        await deleteExam(class_id, exam_id)
 
         return c.json({
             status: "OK"

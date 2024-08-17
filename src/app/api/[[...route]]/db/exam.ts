@@ -390,3 +390,23 @@ export async function deleteAnswer(class_id: string, exam_id: string, index: num
 
     await collection.updateOne({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}, {$set:{questions: questions}})
 }
+
+export async function deleteExam(class_id: string, exam_id: string){
+    const collection = DB.collection("Exam")
+    const exam = (await collection.find({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}).toArray())[0] 
+    const questions: Questions[] = exam.questions
+
+    questions.map((v, i) => {
+        if(questions[i].attachment.length != 0){
+            const attachment: Attachment[] = questions[i].attachment
+            attachment.map((v, i) => {
+                if(v.from == "upload"){
+                    const linkPath = v.source.replace("/api/", "./")
+                    fs.unlinkSync(linkPath)
+                }
+            })
+        }
+    })
+
+    await collection.deleteOne({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)})
+}
