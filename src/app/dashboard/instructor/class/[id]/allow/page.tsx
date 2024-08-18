@@ -102,8 +102,8 @@ export default function AllowPage(){
     return (
         <>
             <Splash isLoad={load}></Splash>
-            <Modal show={modalAdd} setShow={setModalAdd} className="bg-white w-[30rem] h-[60vh] rounded-md px-5 py-4">
-              <div className="overflow-y-scroll">
+            <Modal show={modalAdd} setShow={setModalAdd} className="bg-white w-[30rem] h-[60vh] rounded-md px-5 py-4 overflow-y-scroll">
+              <>
                 <div className="flex justify-end">
                     <button onClick={(ev) => setModalAdd(!modalAdd)}>
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
@@ -151,7 +151,7 @@ export default function AllowPage(){
                         ))}
                     </thead>
                 </table>
-              </div>
+              </>
             </Modal>
             <div className={"bg-white w-full min-h-[100vh]"+ (load? " hidden": "")}>
                 <UserData.Provider value={userData as Users}>
