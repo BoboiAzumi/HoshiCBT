@@ -102,7 +102,7 @@ export default function AllowPage(){
     return (
         <>
             <Splash isLoad={load}></Splash>
-            <Modal show={modalAdd} setShow={setModalAdd} className="bg-white w-[30rem] h-[60vh] rounded-md px-5 py-4 overflow-y-scroll">
+            <Modal show={modalAdd} setShow={setModalAdd} className="bg-white w-[30rem] min-h-[60vh] rounded-md px-5 py-4">
               <>
                 <div className="flex justify-end">
                     <button onClick={(ev) => setModalAdd(!modalAdd)}>
@@ -125,7 +125,8 @@ export default function AllowPage(){
                     className="w-full border border-slate-200 px-3 py-2 focus:outline-[#ff7854] rounded-md"
                 />
                 </form>
-                <table className="my-5 rounded-md w-full border border-collapse">
+                <div className="h-[50vh] overflow-hidden hover:overflow-y-auto">
+                  <table className="my-5 rounded-md w-full border border-collapse">
                     <thead>
                         <tr>
                             <th className="text-gray-600 border py-2 px-2">No</th>
@@ -150,7 +151,8 @@ export default function AllowPage(){
                             </tr>
                         ))}
                     </thead>
-                </table>
+                  </table>
+                </div>
               </>
             </Modal>
             <div className={"bg-white w-full min-h-[100vh]"+ (load? " hidden": "")}>
