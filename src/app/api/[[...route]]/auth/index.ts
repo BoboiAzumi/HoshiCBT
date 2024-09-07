@@ -5,7 +5,9 @@ export const auth: Hono = new Hono();
 
 auth.post("/", RequestHandler)
 auth.get("/", async (c: Context) => {
+    c.status(500)
     return c.json({
-        status: "METHOD_NOT_FOUND"
+        status: "FAIL",
+        message: "Method not found"
     })
 })
