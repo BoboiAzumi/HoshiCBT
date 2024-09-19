@@ -9,13 +9,13 @@ export async function RequestHandler(c: Context){
         const { method } = await c.req.json()
         switch((method as string)){
             case "FIND_USER_BY_ID":
-                return FindId(c)
+                return await FindId(c)
             case "AUTHENTICATION":
-                return SessionCheck(c)
+                return await SessionCheck(c)
             case "SIGN_IN":
-                return SignIn(c)
+                return await SignIn(c)
             case "SIGN_OUT":
-                return SignOut(c)
+                return await SignOut(c)
             default: 
                 c.status(500)
                 return c.json({

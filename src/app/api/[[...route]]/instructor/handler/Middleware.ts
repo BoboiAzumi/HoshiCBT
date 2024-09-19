@@ -2,7 +2,7 @@ import { Context } from "hono"
 import { getCookie } from "hono/cookie"
 import { JWTVerify, verify } from "../../auth/jwtauth"
 
-export async function SessionVerify (c: Context, next: Function){
+export async function SessionVerify(c: Context, next: Function) {
     const jwt: string = <string>getCookie(c, "jwt")
     const encoded: JWTVerify = await verify(jwt)
 
@@ -14,7 +14,7 @@ export async function SessionVerify (c: Context, next: Function){
         })
     }
 
-    if(encoded.result.role != "admin"){
+    if(encoded.result.role != "instructor"){
         c.status(500)
         return c.json({
             status: "FORBIDDEN"
