@@ -17,9 +17,18 @@ import { GetExamList } from "./GetExamList";
 import { CreateNewExam } from "./CreateNewExam";
 import { GetExam } from "./GetExam";
 import { SaveExam } from "./SaveExam";
+import { DeleteExam } from "./DeleteExam";
+import { deleteAnswer, deleteAttachment, deleteQuestion, insertNewAnswer, insertNewAttachment, insertNewQuestion } from "../../db/exam";
+import { GetExamSessions } from "./GetExamSessions";
 
 export async function RequestHandler(c: Context){
-    const { method } = await c.req.json()
+    const { method, data } = await c.req.json()
+    const OK_RESPONSE = {
+        status: "OK"
+    }
+    const FAIL_RESPONSE = {
+        status: "FAIL"
+    }
 
     switch ((method as string)){
         case "GET_SESSION":
@@ -58,5 +67,72 @@ export async function RequestHandler(c: Context){
             return await GetExam(c)
         case "SAVE_EXAM":
             return await SaveExam(c)
+        case "DELETE_EXAM":
+            return await DeleteExam(c)
+        case "NEW_QUESTION":
+            insertNewQuestion(data.class_id, data.exam_id)
+            .then(() => {
+                return c.json(OK_RESPONSE)
+            })
+            .catch(() => {
+                return c.json(FAIL_RESPONSE)
+            })
+            break
+
+        case "NEW_ATTACHMENT":
+            insertNewAttachment(data.class_id, data.exam_id, data.i, {type: data.type, from: data.from, source: data.source})
+            .then(() => {
+                return c.json(OK_RESPONSE)
+            })
+            .catch(() => {
+                return c.json(FAIL_RESPONSE)
+            })
+            break
+
+        case "NEW_ANSWER":
+            insertNewAnswer(data.class_id, data.exam_id, data.i)
+            .then(() => {
+                return c.json(OK_RESPONSE)
+            })
+            .catch(() => {
+                return c.json(FAIL_RESPONSE)
+            })
+            break
+
+        case "DELETE_QUESTION":
+            deleteQuestion(data.class_id, data.exam_id, data.index)
+            .then(() => {
+                return c.json(OK_RESPONSE)
+            })
+            .catch(() => {
+                return c.json(FAIL_RESPONSE)
+            })
+            break
+
+        case "DELETE_ATTACHMENT":
+            deleteAttachment(data.class_id, data.exam_id, data.index, data.aindex)
+            .then(() => {
+                return c.json(OK_RESPONSE)
+            })
+            .catch(() => {
+                return c.json(FAIL_RESPONSE)
+            })
+            break
+
+        case "DELETE_ANSWER":
+            deleteAnswer(data.class_id, data.exam_id, data.i, data.ai)
+            .then(() => {
+                return c.json(OK_RESPONSE)
+            })
+            .catch(() => {
+                return c.json(FAIL_RESPONSE)
+            })
+            break
+
+        case "GET_EXAM_SESSIONS":
+            return await GetExamSessions(c)
+
+        case "RESET_SESSION":
+
     }
 }
