@@ -20,6 +20,7 @@ import { SaveExam } from "./SaveExam";
 import { DeleteExam } from "./DeleteExam";
 import { deleteAnswer, deleteAttachment, deleteQuestion, insertNewAnswer, insertNewAttachment, insertNewQuestion } from "../../db/exam";
 import { GetExamSessions } from "./GetExamSessions";
+import { ResetSession } from "./ResetSession";
 
 export async function RequestHandler(c: Context){
     const { method, data } = await c.req.json()
@@ -133,6 +134,6 @@ export async function RequestHandler(c: Context){
             return await GetExamSessions(c)
 
         case "RESET_SESSION":
-
+            return await ResetSession(c)
     }
 }
