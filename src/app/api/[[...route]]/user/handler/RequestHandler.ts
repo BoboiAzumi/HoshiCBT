@@ -1,6 +1,6 @@
 import { Context } from "hono";
 import { GetUserInfo } from "./GetUserInfo";
-import { GetClass } from "./GetClass";
+import { GetClassroom } from "./GetClassroom";
 import { GetExamList } from "./GetExamList";
 import { CreateExamSession } from "./CreateExamSession";
 import { EndExam } from "./EndExam";
@@ -15,8 +15,8 @@ export async function RequestHandler(c: Context){
         case "GET_USER_INFO":
             return await GetUserInfo(c)
 
-        case "GET_CLASS":
-            return await GetClass(c)
+        case "GET_CLASSROOM":
+            return await GetClassroom(c)
         
         case "GET_EXAM_LIST":
             return await GetExamList(c)

@@ -6,7 +6,7 @@ import { answerQuestion } from "../../db/exam"
 export async function SetAnswer (c: Context){
     const { data } = await c.req.json()
     const cookie = await verify(<string>getCookie(c, "jwt"))
-    const setAnswer = await answerQuestion(data.class_id, data.exam_id, cookie.result._id, data.questionIndex, data.answer)
+    const setAnswer = await answerQuestion(data.class_id, data.exam_id, cookie.result._id, data.question_index, data.answer)
 
     if(!setAnswer){
         return c.json({
