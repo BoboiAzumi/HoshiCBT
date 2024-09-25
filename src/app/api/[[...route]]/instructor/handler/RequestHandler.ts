@@ -129,5 +129,8 @@ export async function RequestHandler(c: Context){
 
         case "RESET_SESSION":
             return await ResetSession(c)
+
+        default:
+            return c.json(FAIL_RESPONSE)
     }
 }
