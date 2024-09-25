@@ -19,7 +19,7 @@ import { GetExam } from "./GetExam";
 import { SaveExam } from "./SaveExam";
 import { DeleteExam } from "./DeleteExam";
 import { deleteAnswer, deleteAttachment, deleteQuestion, insertNewAnswer, insertNewAttachment, insertNewQuestion } from "../../db/exam";
-import { GetExamSessions } from "./GetExamSessions";
+import { GetExamSession } from "./GetExamSession";
 import { ResetSession } from "./ResetSession";
 
 export async function RequestHandler(c: Context){
@@ -71,67 +71,61 @@ export async function RequestHandler(c: Context){
         case "DELETE_EXAM":
             return await DeleteExam(c)
         case "NEW_QUESTION":
-            insertNewQuestion(data.class_id, data.exam_id)
-            .then(() => {
-                return c.json(OK_RESPONSE)
-            })
-            .catch(() => {
+            try{
+                await insertNewQuestion(data.class_id, data.exam_id)
+                return c.json(OK_RESPONSE) 
+            }
+            catch{
                 return c.json(FAIL_RESPONSE)
-            })
-            break
+            }
 
         case "NEW_ATTACHMENT":
-            insertNewAttachment(data.class_id, data.exam_id, data.i, {type: data.type, from: data.from, source: data.source})
-            .then(() => {
+            try{
+                await insertNewAttachment(data.class_id, data.exam_id, data.i, {type: data.type, from: data.from, source: data.source})
                 return c.json(OK_RESPONSE)
-            })
-            .catch(() => {
+            }
+            catch{
                 return c.json(FAIL_RESPONSE)
-            })
-            break
+            }
 
         case "NEW_ANSWER":
-            insertNewAnswer(data.class_id, data.exam_id, data.i)
-            .then(() => {
+            try{
+                insertNewAnswer(data.class_id, data.exam_id, data.i)
                 return c.json(OK_RESPONSE)
-            })
-            .catch(() => {
+            }
+            catch{
                 return c.json(FAIL_RESPONSE)
-            })
-            break
+            }
 
         case "DELETE_QUESTION":
-            deleteQuestion(data.class_id, data.exam_id, data.index)
-            .then(() => {
+            try{
+                deleteQuestion(data.class_id, data.exam_id, data.index)
                 return c.json(OK_RESPONSE)
-            })
-            .catch(() => {
+            }
+            catch{
                 return c.json(FAIL_RESPONSE)
-            })
-            break
+            }
 
         case "DELETE_ATTACHMENT":
-            deleteAttachment(data.class_id, data.exam_id, data.index, data.aindex)
-            .then(() => {
+            try{
+                deleteAttachment(data.class_id, data.exam_id, data.index, data.aindex)
                 return c.json(OK_RESPONSE)
-            })
-            .catch(() => {
+            }
+            catch{
                 return c.json(FAIL_RESPONSE)
-            })
-            break
+            }
 
         case "DELETE_ANSWER":
-            deleteAnswer(data.class_id, data.exam_id, data.i, data.ai)
-            .then(() => {
+            try{
+                deleteAnswer(data.class_id, data.exam_id, data.i, data.ai)
                 return c.json(OK_RESPONSE)
-            })
-            .catch(() => {
+            }
+            catch{
                 return c.json(FAIL_RESPONSE)
-            })
-            break
+            }
 
-        case "GET_EXAM_SESSIONS":
-            return await GetExamSessions(c)
+        case "GET_EXAM_SESSION":
+            return await GetExamSession(c)
 
         case "RESET_SESSION":
             return await ResetSession(c)

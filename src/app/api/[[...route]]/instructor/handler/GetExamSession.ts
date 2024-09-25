@@ -1,7 +1,7 @@
 import { Context } from "hono"
 import { getAllSessionResult } from "../../db/exam"
 
-export async function GetExamSessions(c: Context) {
+export async function GetExamSession(c: Context) {
     try{
         const { data } = await c.req.json()
 

@@ -375,7 +375,12 @@ export async function deleteAttachment(class_id: string, exam_id: string, index:
     const { attachment } = questions[index] as Questions
 
     const linkPath = attachment[attachmentIndex].source.replace("/api/", "./")
-    fs.unlinkSync(linkPath)
+    try{
+        fs.unlinkSync(linkPath)
+    }
+    catch{
+        console.log("Skipping file ...")
+    }
 
     const newAttachment = attachment.filter((v, i) => i != attachmentIndex);
     questions[index].attachment = newAttachment
