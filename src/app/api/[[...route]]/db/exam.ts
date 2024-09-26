@@ -302,7 +302,7 @@ export async function getExam(class_id: string, exam_id: string){
     return exam[0]
 }
 
-export async function saveExam(class_id: string, exam_id: string, exam_name: string, duration: number, questions: Questions){
+export async function saveExam(class_id: string, exam_id: string, exam_name: string, duration: number, questions: Questions[]){
     const collection = DB.collection("Exam")
     await collection.updateOne({_id: new ObjectId(exam_id), class_id: new ObjectId(class_id)}, {$set: {exam_name, duration, questions}})
 
@@ -375,7 +375,12 @@ export async function deleteAttachment(class_id: string, exam_id: string, index:
     const { attachment } = questions[index] as Questions
 
     const linkPath = attachment[attachmentIndex].source.replace("/api/", "./")
-    fs.unlinkSync(linkPath)
+    try{
+        fs.unlinkSync(linkPath)
+    }
+    catch{
+        console.log("Skipping file ...")
+    }
 
     const newAttachment = attachment.filter((v, i) => i != attachmentIndex);
     questions[index].attachment = newAttachment

@@ -4,7 +4,12 @@ import { useEffect } from "react"
 
 export default function DashboardSpinner(){
     useEffect(() => {
-        fetch("/api/auth/").then((r) => r.json())
+        fetch("/api/auth/", {
+            method: "post",
+            body: JSON.stringify({
+                method: "AUTHENTICATION"
+            })
+        }).then((r) => r.json())
         .then((json) => {
             if(json.status != "OK") document.location.href = "./signin"
             switch(json.data.role){

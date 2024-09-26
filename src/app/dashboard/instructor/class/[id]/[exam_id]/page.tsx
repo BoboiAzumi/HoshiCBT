@@ -4,7 +4,7 @@ import { Users } from "@/app/api/[[...route]]/types/user";
 import DeletePrompt from "@/components/deletePrompt";
 import LoadingModal from "@/components/loadingModal";
 import Modal from "@/components/modal";
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/AdminNavbar";
 import QuestionsForm from "@/components/questionsForm";
 import { SessionList } from "@/components/sessionList";
 import Splash from "@/components/splash";

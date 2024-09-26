@@ -3,7 +3,7 @@ import {useEffect, useState} from "react"
 import { Users } from "@/app/api/[[...route]]/types/user"
 import Splash from "@/components/splash"
 import { UserData } from "@/context/UserData"
-import Navbar from "@/components/navbar"
+import Navbar from "@/components/AdminNavbar"
 import { ClassroomData } from "@/app/api/[[...route]]/types/class"
 
 export default function UserDashboard() {
