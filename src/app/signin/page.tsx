@@ -64,7 +64,7 @@ export default function Login(){
                             src="/img/loginBg.png"
                             className="w-full h-[100vh] object-cover"
                         />
-                        <div className="absolute w-full h-[100vh] bg-black top-0 bg-opacity-40">
+                        <div className="absolute w-full h-[100vh] bg-black top-0 bg-opacity-60">
                             <div className="absolute bottom-[15vh] left-[8vw] right-[8vw]">
                                 <h2 className="text-gray-200 text-3xl italic">
                                     Welcome to
