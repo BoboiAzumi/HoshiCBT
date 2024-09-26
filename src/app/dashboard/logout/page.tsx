@@ -5,7 +5,10 @@ import { useEffect } from "react"
 export default function DashboardSpinner(){
     useEffect(() => {
         fetch("/api/auth/", {
-            method: "delete"
+            method: "post",
+            body: JSON.stringify({
+                method: "SIGN_OUT"
+            })
         }).then((r) => r.json())
         .then((json) => {
             document.location.href = "/signin"

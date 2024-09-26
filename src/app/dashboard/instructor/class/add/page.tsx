@@ -1,7 +1,7 @@
 "use client"
 
 import { Users } from "@/app/api/[[...route]]/types/user";
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/AdminNavbar";
 import Splash from "@/components/splash";
 import { UserData } from "@/context/UserData";
 import { useEffect, useState } from "react";

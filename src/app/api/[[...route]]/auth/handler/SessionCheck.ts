@@ -9,7 +9,7 @@ export async function SessionCheck(c: Context){
         if(credential.error != null){
             c.status(500)
             return c.json({
-                status: "OK",
+                status: "FAIL",
                 message: "Invalid Cridential"
             })
         }
