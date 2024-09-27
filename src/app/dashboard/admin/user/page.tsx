@@ -92,7 +92,7 @@ export default function UserEditorPage(){
         const res = await fetch("/api/admin/", {
             method: "POST",
             body: JSON.stringify({
-                method: "ADD_ADMIN",
+                method: "ADD_USER",
                 data: newUser
             })
         })
