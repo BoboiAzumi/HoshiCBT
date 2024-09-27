@@ -130,6 +130,7 @@ export async function examSession(class_id: string, exam_id: string, user_id: st
         return false;
     }
     if(await is_due(class_id, exam_id, user_id)){
+        console.log("true")
         return false;
     }
 

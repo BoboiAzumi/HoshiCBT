@@ -106,13 +106,13 @@ export default function QuestionsDisplay() {
                     <div className="flex justify-center mt-5 gap-5">
                         <button
                             onClick={(ev) => ConfirmModal.current.close()}
-                            className="border border-[#ff4c1a] text-black min-w-[6rem] py-1 px-5 rounded-md"
+                            className="btn border border-[#ff4c1a] hover:bg-[#ff4c1a] hover:text-white text-black min-w-[6rem]"
                         >
                             No
                         </button>
                         <button
                             onClick={(ev) => endSession()}
-                            className="bg-[#ff4c1a] text-white min-w-[6rem] py-1 px-5 rounded-md"
+                            className="btn bg-[#ff4c1a] hover:bg-[#ff4c1a] text-white min-w-[6rem]"
                         >
                             Yes
                         </button>
