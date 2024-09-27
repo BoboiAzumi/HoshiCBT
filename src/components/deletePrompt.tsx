@@ -32,7 +32,9 @@ export default function DeletePrompt(props: deletePromptObject){
                     <div className="mt-5">
                         <button
                             className="btn bg-transparent border-slate-200 px-3 py-1 rounded-md hover:border-[#ff4c1a] hover:bg-[#ff4c1a] hover:text-white"
-                            onClick={() => DeleteModal.current.close()}
+                            onClick={() => {
+                                props.setShow(false)
+                            }}
                         >
                             No
                         </button>
