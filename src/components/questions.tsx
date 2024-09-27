@@ -1,20 +1,19 @@
 import { Answer } from "@/app/api/[[...route]]/types/exam"
 import { ExamContext } from "@/context/Exam"
+import { QuestionIndex } from "@/context/QuestionIndex"
 import { QuestionsContext } from "@/context/Questions"
+import { Timer } from "@/context/Timer"
 import { useParams } from "next/navigation"
-import { FormEvent, useContext, useEffect, useState } from "react"
+import { FormEvent, useContext, useEffect, useRef, useState } from "react"
 
 export default function QuestionsDisplay() {
     const { examid , classid } = useParams()
     const { examData, setExamData } = useContext(ExamContext)
     const { questions, setQuestions } = useContext(QuestionsContext)
+    const timerContext = useContext(Timer)
     let [ confirmEnd, setConfirmEnd ] = useState(false)
-    let [timer, setTimer] = useState({
-        hour: 0,
-        minutes: 0,
-        seconds: 0
-    })
-    let [index, setIndex] = useState(0)
+    const { index, setIndex } = useContext(QuestionIndex)
+    const ConfirmModal = useRef({} as HTMLDialogElement)
 
     function setAnswer(answer: number) {
         questions.answer = answer
@@ -33,11 +32,16 @@ export default function QuestionsDisplay() {
             ...examData
         })
 
-        fetch("/api/user/class/"+classid+"/"+examid, {
+        fetch("/api/user/", {
             method: "post",
             body: JSON.stringify({
-                questionIndex: examData.questions?.[index].index,
-                answer
+                method: "SET_ANSWER",
+                data: {
+                    class_id: classid,
+                    exam_id: examid,
+                    question_index: examData.questions?.[index].index,
+                    answer
+                }
             })
         }).then((res) => res.json())
         .then((json) => {
@@ -48,7 +52,16 @@ export default function QuestionsDisplay() {
     }
 
     function endSession(){
-        fetch("/api/user/class/"+classid+"/"+examid+"/end").then((res) => res.json())
+        fetch("/api/user/", {
+            method: "post",
+            body: JSON.stringify({
+                method: "END_EXAM",
+                data: {
+                    class_id: classid,
+                    exam_id: examid
+                }
+            })
+        }).then((res) => res.json())
         .then((json) => {
             if(json.status == "OK"){
                 document.location.href = "/dashboard/user/class/"+classid+"/"
@@ -69,51 +82,60 @@ export default function QuestionsDisplay() {
                 const minutes = Math.floor((remain / 1000 / 60 / 60 - hour) * 60);
                 const seconds = Math.floor(((remain / 1000 / 60 / 60 - hour) * 60 - minutes) * 60);
 
-                setTimer({
+                timerContext.setTimer({
                     hour,
                     minutes,
                     seconds
                 })
             }
         }, 1000)
+
+        return () => clearInterval(interval)
     }, [examData])
 
     return (
         <>
-            <div className={"fixed w-full z-[10] h-[100vh] bg-black bg-opacity-60 flex flex-col justify-center items-center "+(confirmEnd? "" : "hidden")}>
-                <div className="bg-white w-[30rem] px-5 py-3 rounded-md">
-                    <h3 className="text-center font-bold text-lg text-gray-600">Confirm End Exam Session</h3>
+            <dialog
+                ref={ConfirmModal}
+                className="modal modal-bottom sm:modal-middle"
+            >
+                <div className="modal-box">
+                    <h3 className="text-center font-bold text-lg text-gray-600">
+                        Confirm End Exam Session
+                    </h3>
                     <div className="flex justify-center mt-5 gap-5">
-                        <button onClick={(ev) => setConfirmEnd(false)} className="border border-[#ff4c1a] text-black min-w-[6rem] py-1 px-5 rounded-md">No</button>
-                        <button onClick={(ev) => endSession()} className="bg-[#ff4c1a] text-white min-w-[6rem] py-1 px-5 rounded-md">Yes</button>
+                        <button
+                            onClick={(ev) => ConfirmModal.current.close()}
+                            className="btn border border-[#ff4c1a] hover:bg-[#ff4c1a] hover:text-white text-black min-w-[6rem]"
+                        >
+                            No
+                        </button>
+                        <button
+                            onClick={(ev) => endSession()}
+                            className="btn bg-[#ff4c1a] hover:bg-[#ff4c1a] text-white min-w-[6rem]"
+                        >
+                            Yes
+                        </button>
                     </div>
                 </div>
-            </div>
-            <div className="flex w-full min-h-[100vh] py-10">
-                <div className="bg-white shadow-sm border border-blue-300 rounded-[0.5rem] mb-10 min-h-[80vh] mx-10 w-[20vw]">
-                    <h4 className="text-center px-5 py-3 font-bold text-lg bg-blue-300 rounded-t-[0.3rem]">
-                        {examData.exam_name}
-                    </h4>
-                    <h4 className="text-center font-bold text-sm py-2 border border-b-blue-300">
-                        {timer.hour}:{timer.minutes}:{timer.seconds}
-                    </h4>
-                    <div className="grid grid-flow-row-dense md:grid-cols-3 lg:grid-cols-4 my-5 gap-4 px-5">
-                        {examData.questions?.map((v, i) => (
-                            <button
-                                className={"shadow-md cursor-pointer flex justify-center py-2 w-10 rounded-md" + (i == index ? " bg-blue-300" : v.answer != null? " bg-[#ff4c1a] text-white": " bg-white ")}
-                                onClick={(ev) =>{ setQuestions(v); setIndex(i)}}
-                            >
-                                {i + 1}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-                <div className="bg-white shadow-sm border border-[#ff4c1a] rounded-[0.5rem] mb-10 min-h-[80vh] mx-10 w-[70vw]">
+
+                <form method="dialog" className="modal-backdrop">
+                    <button>Close</button>
+                </form>
+            </dialog>
+            
+            <div className="flex w-full min-h-[100vh] sm:py-10">
+                <div className="bg-white shadow-sm border border-[#ff4c1a] rounded-[0.5rem] sm:mb-10 min-h-[100vh] sm:min-h-[80vh] sm:mx-10 w-full sm:w-[100vw] mt-[4rem]">
                     <h4 className="text-white text-center px-5 py-3 font-bold text-lg bg-[#ff4c1a] rounded-t-[0.3rem]">
-                        Questions {index+1}
+                        Questions {index + 1}
                     </h4>
                     <h4 className="mx-10 my-4">{questions?.question}</h4>
-                    <div className={"flex flex-col items-center mx-10 my-4"+ (questions?.attachment?.length != 0? " my-5": "")}>
+                    <div
+                        className={
+                            "flex flex-col items-center mx-10 my-4" +
+                            (questions?.attachment?.length != 0 ? " my-5" : "")
+                        }
+                    >
                         {questions?.attachment?.map((v, i) => (
                             <>
                                 {v.type == "image" ? (
@@ -152,7 +174,9 @@ export default function QuestionsDisplay() {
                                     type="radio"
                                     value={v.index}
                                     checked={questions.answer == v.index}
-                                    onClick={(ev: FormEvent) => setAnswer(v.index as number)}
+                                    onClick={(ev: FormEvent) =>
+                                        setAnswer(v.index as number)
+                                    }
                                 />
                                 <label
                                     className="ml-5"
@@ -164,17 +188,40 @@ export default function QuestionsDisplay() {
                         ))}
                     </div>
                     <div className="flex justify-between mx-10 my-4">
-                        {index > 0? (
-                            <button className="bg-[#ff4c1a] text-white min-w-[6rem] py-1 px-5 rounded-md" onClick={(ev) => { setQuestions(examData.questions?.[index-1]); setIndex(index-1)}}>
+                        {index > 0 ? (
+                            <button
+                                className="btn bg-[#ff4c1a] hover:bg-[#ff4c1a] text-white min-w-[6rem]"
+                                onClick={(ev) => {
+                                    setQuestions(
+                                        examData.questions?.[index - 1]
+                                    );
+                                    setIndex(index - 1);
+                                }}
+                            >
                                 Previous
                             </button>
-                        ) : (<></>)}
-                        {index != (examData?.questions? examData.questions.length : 0) - 1 ? (
-                            <button className="bg-[#ff4c1a] text-white min-w-[6rem] py-1 px-5 rounded-md" onClick={(ev) => { setQuestions(examData.questions?.[index+1]); setIndex(index+1)}}>
+                        ) : (
+                            <></>
+                        )}
+                        {index !=
+                        (examData?.questions ? examData.questions.length : 0) -
+                            1 ? (
+                            <button
+                                className="btn bg-[#ff4c1a] hover:bg-[#ff4c1a] text-white"
+                                onClick={(ev) => {
+                                    setQuestions(
+                                        examData.questions?.[index + 1]
+                                    );
+                                    setIndex(index + 1);
+                                }}
+                            >
                                 Next
                             </button>
                         ) : (
-                            <button className="bg-[#ff4c1a] text-white min-w-[6rem] py-1 px-5 rounded-md" onClick={(ev) => setConfirmEnd(true)}>
+                            <button
+                                className="btn bg-[#ff4c1a] hover:bg-[#ff4c1a] text-white"
+                                onClick={(ev) => ConfirmModal.current.showModal()}
+                            >
                                 End Session
                             </button>
                         )}
@@ -182,5 +229,5 @@ export default function QuestionsDisplay() {
                 </div>
             </div>
         </>
-    )
+    );
 }
