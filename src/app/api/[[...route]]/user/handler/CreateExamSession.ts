@@ -8,7 +8,7 @@ export async function CreateExamSession (c: Context){
     const cookie = await verify(<string>getCookie(c, "jwt"))
     const exam = await examSession(data.class_id, data.exam_id, cookie.result._id)
 
-    if(exam == false){
+    if(!exam){
         return c.json({
             status: "FAIL"
         })
